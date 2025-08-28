@@ -1,0 +1,54 @@
+{
+  "hooks": {
+    "post-edit": {
+      "enabled": true,
+      "script": ".claude-code/hooks/auto-commit.sh",
+      "trigger": "on-success",
+      "delay": 5000,
+      "conditions": {
+        "min_changes": 1,
+        "exclude_patterns": [".env", ".env.local", "*.log"],
+        "include_patterns": ["*.ts", "*.tsx", "*.js", "*.jsx", "*.json", "*.css"]
+      }
+    },
+    "pre-commit": {
+      "enabled": true,
+      "checks": [
+        {
+          "name": "typescript",
+          "command": "npx tsc --noEmit",
+          "required": true
+        },
+        {
+          "name": "eslint",
+          "command": "npx eslint src --max-warnings 10",
+          "required": false
+        },
+        {
+          "name": "prettier",
+          "command": "npx prettier --check src",
+          "required": false
+        }
+      ]
+    },
+    "post-commit": {
+      "enabled": false,
+      "notifications": {
+        "success": "✅ Code committed successfully",
+        "failure": "❌ Commit failed - check errors"
+      }
+    }
+  },
+  "settings": {
+    "auto_commit": true,
+    "commit_frequency": "on-success",
+    "batch_changes": true,
+    "max_files_per_commit": 10,
+    "commit_message_format": "conventional",
+    "push_to_remote": false,
+    "branch_protection": {
+      "protected_branches": ["main", "master", "production"],
+      "allow_force_push": false
+    }
+  }
+}
