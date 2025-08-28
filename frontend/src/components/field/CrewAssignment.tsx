@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { CrewAssignment } from '../../types/field.types';
-import { Profile, PieceMark } from '../../types/database.types';
+import type { CrewAssignment } from '../../types/field.types';
+import type { Profile, PieceMark } from '../../types/database.types';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../auth/AuthContext';
 

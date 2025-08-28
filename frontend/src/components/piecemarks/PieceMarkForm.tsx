@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PieceMark, PieceMarkStatus } from '../../types/database.types';
+import type { PieceMark, PieceMarkStatus } from '../../types/database.types';
 
 interface PieceMarkFormProps {
   projectId: string;

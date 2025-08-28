@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { PieceMark, PieceMarkStatus } from '../types/database.types';
+import type { PieceMark, PieceMarkStatus } from '../types/database.types';
 
 export const pieceMarkService = {
   // Get all piece marks for a project

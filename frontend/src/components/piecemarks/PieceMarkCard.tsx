@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import QRCode from 'qrcode';
 import { useDropzone } from 'react-dropzone';
-import { PieceMark, PieceMarkStatus } from '../../types/database.types';
-import { PieceLocation } from '../../types/field.types';
+import type { PieceMark, PieceMarkStatus } from '../../types/database.types';
+import type { PieceLocation } from '../../types/field.types';
 import { pieceMarkService } from '../../services/pieceMarkService';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../auth/AuthContext';

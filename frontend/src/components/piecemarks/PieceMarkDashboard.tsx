@@ -1,5 +1,5 @@
 import React from 'react';
-import { PieceMark, PieceMarkStatus } from '../../types/database.types';
+import type { PieceMark, PieceMarkStatus } from '../../types/database.types';
 
 interface PieceMarkDashboardProps {
   pieceMarks: PieceMark[];

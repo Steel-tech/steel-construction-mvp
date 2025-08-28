@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { PieceMark } from '../../types/database.types';
-import { 
+import type { PieceMark } from '../../types/database.types';
+import type {
   QualityInspection,
   InspectionItem,
   InspectionSummary,

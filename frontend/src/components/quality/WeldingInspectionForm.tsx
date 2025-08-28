@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { WeldingInspectionFormData, WeldType, WeldPosition, ItemResult } from '../../types/quality.types';
+import type { WeldingInspectionFormData, WeldType, WeldPosition, ItemResult } from '../../types/quality.types';
 import { qualityService } from '../../services/quality.service';
 
 interface WeldingInspectionFormProps {

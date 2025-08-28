@@ -4,7 +4,7 @@ import { useAuth } from '../components/auth/AuthContext';
 import { PieceMarkList } from '../components/piecemarks/PieceMarkList';
 import { PieceMarkForm } from '../components/piecemarks/PieceMarkForm';
 import { pieceMarkService } from '../services/pieceMarkService';
-import { PieceMark, PieceMarkStatus } from '../types/database.types';
+import type { PieceMark, PieceMarkStatus } from '../types/database.types';
 import { supabase } from '../lib/supabase';
 
 export const PieceMarksPage: React.FC = () => {

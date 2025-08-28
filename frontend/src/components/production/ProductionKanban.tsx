@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { DndContext, DragEndEvent, useDraggable, useDroppable, DragOverlay } from '@dnd-kit/core';
-import { ProductionWorkflow, ProductionStage, Priority } from '../../types/production.types';
+import { DndContext, type DragEndEvent, useDraggable, useDroppable, DragOverlay } from '@dnd-kit/core';
+import type { ProductionWorkflow, ProductionStage, Priority } from '../../types/production.types';
 import { productionService } from '../../services/production.service';
 
 interface KanbanColumnProps {

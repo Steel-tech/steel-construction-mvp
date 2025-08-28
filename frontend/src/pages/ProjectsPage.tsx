@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
 import { supabase } from '../lib/supabase';
-import { Project } from '../types/database.types';
+import type { Project } from '../types/database.types';
 
 export const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();

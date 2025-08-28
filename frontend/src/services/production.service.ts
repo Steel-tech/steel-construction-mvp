@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import {
+import type {
   ProductionWorkflow,
   ProductionStage,
   ProductionTask,
@@ -20,7 +20,8 @@ import {
   WorkflowUpdateEvent,
   TaskUpdateEvent,
 } from '../types/production.types';
-import { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+import { RealtimeChannel } from '@supabase/supabase-js';
 
 export class ProductionService {
   private workflowChannel: RealtimeChannel | null = null;

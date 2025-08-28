@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DimensionalCheckFormData } from '../../types/quality.types';
+import type { DimensionalCheckFormData } from '../../types/quality.types';
 import { qualityService } from '../../services/quality.service';
 
 interface DimensionalCheckFormProps {

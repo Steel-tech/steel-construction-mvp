@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QualityChecklist } from '../../components/quality/QualityChecklist';
-import { PieceMark } from '../../types/database.types';
-import { QualityInspection } from '../../types/quality.types';
+import type { PieceMark } from '../../types/database.types';
+import type { QualityInspection } from '../../types/quality.types';
 
 export const QualityControlDemo: React.FC = () => {
   const navigate = useNavigate();

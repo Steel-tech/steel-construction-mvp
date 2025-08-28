@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ProductionWorkflow, ProductionStage, StageTransition } from '../../types/production.types';
+import type { ProductionWorkflow, ProductionStage, StageTransition } from '../../types/production.types';
 import { productionService } from '../../services/production.service';
 
 interface TimelineStageProps {

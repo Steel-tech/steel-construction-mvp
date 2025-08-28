@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PieceMarkCard } from '../components/piecemarks/PieceMarkCard';
-import { PieceMark } from '../types/database.types';
+import type { PieceMark } from '../types/database.types';
 
 export const PieceMarkCardDemo: React.FC = () => {
   const navigate = useNavigate();

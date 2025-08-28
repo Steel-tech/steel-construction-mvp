@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
-import { UserRole } from '../../types/database.types';
+import type { UserRole } from '../../types/database.types';
 
 interface SignupFormProps {
   onSuccess?: () => void;

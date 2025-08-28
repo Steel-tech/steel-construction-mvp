@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ProductionKanban } from './ProductionKanban';
 import { ProductionTimeline } from './ProductionTimeline';
 import { ProductionTaskList } from './ProductionTaskList';
-import { ProductionWorkflow, ProductionStats, WorkflowUpdateEvent, TaskUpdateEvent } from '../../types/production.types';
+import type { ProductionWorkflow, ProductionStats, WorkflowUpdateEvent, TaskUpdateEvent } from '../../types/production.types';
 import { productionService } from '../../services/production.service';
 import { useAuth } from '../auth/AuthContext';
 

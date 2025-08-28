@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Delivery, DeliveryItem, DeliveryStatus, PieceLocation } from '../../types/field.types';
-import { PieceMark } from '../../types/database.types';
+import type { Delivery, DeliveryItem, DeliveryStatus, PieceLocation } from '../../types/field.types';
+import type { PieceMark } from '../../types/database.types';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../auth/AuthContext';
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
 import { supabase } from '../lib/supabase';
-import { WorkOrder } from '../types/database.types';
+import type { WorkOrder } from '../types/database.types';
 
 export const WorkOrdersPage: React.FC = () => {
   const navigate = useNavigate();
