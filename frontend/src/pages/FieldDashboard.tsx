@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../components/auth/AuthContext';
+import { useAuth } from '../components/auth/useAuth';
 import { DeliveryReceiving } from '../components/field/DeliveryReceiving';
 import { PieceLocationTracker } from '../components/field/PieceLocationTracker';
 import { CrewAssignmentComponent } from '../components/field/CrewAssignment';

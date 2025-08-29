@@ -11,7 +11,7 @@ import type {
   InspectionPhoto
 } from '../../types/quality.types';
 import { qualityService } from '../../services/quality.service';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '../auth/useAuth';
 import { WeldingInspectionForm } from './WeldingInspectionForm';
 import { DimensionalCheckForm } from './DimensionalCheckForm';
 

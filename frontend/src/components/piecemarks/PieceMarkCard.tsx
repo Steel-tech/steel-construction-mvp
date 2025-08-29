@@ -5,7 +5,7 @@ import type { PieceMark, PieceMarkStatus } from '../../types/database.types';
 import type { PieceLocation } from '../../types/field.types';
 import { pieceMarkService } from '../../services/pieceMarkService';
 import { supabase } from '../../lib/supabase';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '../auth/useAuth';
 
 interface PieceMarkCardProps {
   pieceMark: PieceMark;

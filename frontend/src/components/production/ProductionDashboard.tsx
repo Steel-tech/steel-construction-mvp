@@ -4,7 +4,7 @@ import { ProductionTimeline } from './ProductionTimeline';
 import { ProductionTaskList } from './ProductionTaskList';
 import type { ProductionWorkflow, ProductionStats, WorkflowUpdateEvent, TaskUpdateEvent } from '../../types/production.types';
 import { productionService } from '../../services/production.service';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '../auth/useAuth';
 
 interface ProductionDashboardProps {
   projectId: string;

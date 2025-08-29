@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from './AuthContext';
+import { useAuth } from './useAuth';
 import type { UserRole } from '../../types/database.types';
 
 interface SignupFormProps {
@@ -36,8 +36,9 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess }) => {
     try {
       await signUp(email, password, fullName, role);
       onSuccess?.();
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign up');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to sign up';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

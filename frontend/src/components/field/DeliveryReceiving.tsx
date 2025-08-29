@@ -1,8 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { Delivery, DeliveryItem, DeliveryStatus, PieceLocation } from '../../types/field.types';
 import type { PieceMark } from '../../types/database.types';
 import { supabase } from '../../lib/supabase';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '../auth/useAuth';
+
+interface ReceivedItemData {
+  quantity: number;
+  location: PieceLocation;
+  condition: 'good' | 'damaged' | 'missing';
+  notes: string;
+}
 
 interface DeliveryReceivingProps {
   projectId: string;
@@ -29,7 +36,7 @@ export const DeliveryReceiving: React.FC<DeliveryReceivingProps> = ({
 
   useEffect(() => {
     fetchDeliveries();
-  }, [projectId]);
+  }, [fetchDeliveries]);
 
   useEffect(() => {
     if (selectedDelivery) {
@@ -37,7 +44,7 @@ export const DeliveryReceiving: React.FC<DeliveryReceivingProps> = ({
     }
   }, [selectedDelivery]);
 
-  const fetchDeliveries = async () => {
+  const fetchDeliveries = useCallback(async () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -53,7 +60,7 @@ export const DeliveryReceiving: React.FC<DeliveryReceivingProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId]);
 
   const fetchDeliveryItems = async (deliveryId: string) => {
     try {
@@ -83,7 +90,7 @@ export const DeliveryReceiving: React.FC<DeliveryReceivingProps> = ({
       setDeliveryItems(items || []);
 
       // Initialize received items tracking
-      const initialReceived: Record<string, any> = {};
+      const initialReceived: Record<string, ReceivedItemData> = {};
       items?.forEach(item => {
         initialReceived[item.id] = {
           quantity: item.quantity,
@@ -161,7 +168,7 @@ export const DeliveryReceiving: React.FC<DeliveryReceivingProps> = ({
     }
   };
 
-  const updateReceivedItem = (itemId: string, field: string, value: any) => {
+  const updateReceivedItem = (itemId: string, field: keyof ReceivedItemData, value: string | number) => {
     setReceivedItems(prev => ({
       ...prev,
       [itemId]: {

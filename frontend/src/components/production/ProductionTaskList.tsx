@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { ProductionTask, TaskStatus, ProductionStage, UpdateTaskData } from '../../types/production.types';
 import { productionService } from '../../services/production.service';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '../auth/useAuth';
 
 interface TaskCardProps {
   task: ProductionTask;

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { CrewAssignment } from '../../types/field.types';
 import type { Profile, PieceMark } from '../../types/database.types';
 import { supabase } from '../../lib/supabase';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '../auth/useAuth';
 
 interface CrewAssignmentProps {
   projectId: string;
@@ -31,9 +31,9 @@ export const CrewAssignmentComponent: React.FC<CrewAssignmentProps> = ({ project
     fetchCrews();
     fetchForemen();
     fetchAvailablePieces();
-  }, [projectId, selectedDate]);
+  }, [fetchCrews, fetchForemen, fetchAvailablePieces]);
 
-  const fetchCrews = async () => {
+  const fetchCrews = useCallback(async () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -50,9 +50,9 @@ export const CrewAssignmentComponent: React.FC<CrewAssignmentProps> = ({ project
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId, selectedDate]);
 
-  const fetchForemen = async () => {
+  const fetchForemen = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -65,9 +65,9 @@ export const CrewAssignmentComponent: React.FC<CrewAssignmentProps> = ({ project
     } catch (error) {
       console.error('Error fetching foremen:', error);
     }
-  };
+  }, []);
 
-  const fetchAvailablePieces = async () => {
+  const fetchAvailablePieces = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('piece_marks')
@@ -81,7 +81,7 @@ export const CrewAssignmentComponent: React.FC<CrewAssignmentProps> = ({ project
     } catch (error) {
       console.error('Error fetching piece marks:', error);
     }
-  };
+  }, [projectId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -315,7 +315,7 @@ export const CrewAssignmentComponent: React.FC<CrewAssignmentProps> = ({ project
                   </label>
                   <select
                     value={formData.shift}
-                    onChange={(e) => setFormData({ ...formData, shift: e.target.value as any })}
+                    onChange={(e) => setFormData({ ...formData, shift: e.target.value as 'day' | 'night' | 'weekend' })}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="day">Day Shift</option>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from './AuthContext';
+import { useAuth } from './useAuth';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -20,8 +20,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     try {
       await signIn(email, password);
       onSuccess?.();
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign in');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to sign in';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -1,8 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { PieceMark } from '../../types/database.types';
 import type { PieceLocation, FieldActivity } from '../../types/field.types';
+
+// Extend PieceMark to include field_location
+interface PieceMarkWithLocation extends PieceMark {
+  field_location?: PieceLocation;
+}
 import { supabase } from '../../lib/supabase';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '../auth/useAuth';
 
 interface PieceLocationTrackerProps {
   projectId: string;
@@ -10,21 +15,19 @@ interface PieceLocationTrackerProps {
 
 export const PieceLocationTracker: React.FC<PieceLocationTrackerProps> = ({ projectId }) => {
   const { user } = useAuth();
-  const [pieceMarks, setPieceMarks] = useState<PieceMark[]>([]);
+  const [pieceMarks, setPieceMarks] = useState<PieceMarkWithLocation[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<PieceLocation | 'all'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [movingPiece, setMovingPiece] = useState<string | null>(null);
   const [newLocation, setNewLocation] = useState<PieceLocation>('yard');
-  const [loading, setLoading] = useState(false);
   const [activities, setActivities] = useState<FieldActivity[]>([]);
 
   useEffect(() => {
     fetchPieceMarks();
     fetchRecentActivities();
-  }, [projectId]);
+  }, [fetchPieceMarks, fetchRecentActivities]);
 
-  const fetchPieceMarks = async () => {
-    setLoading(true);
+  const fetchPieceMarks = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('piece_marks')
@@ -37,12 +40,10 @@ export const PieceLocationTracker: React.FC<PieceLocationTrackerProps> = ({ proj
       setPieceMarks(data || []);
     } catch (error) {
       console.error('Error fetching piece marks:', error);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [projectId]);
 
-  const fetchRecentActivities = async () => {
+  const fetchRecentActivities = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('field_activities')
@@ -56,7 +57,7 @@ export const PieceLocationTracker: React.FC<PieceLocationTrackerProps> = ({ proj
     } catch (error) {
       console.error('Error fetching activities:', error);
     }
-  };
+  }, [projectId]);
 
   const handleLocationUpdate = async (pieceMarkId: string, newLocation: PieceLocation) => {
     if (!user) return;
@@ -123,17 +124,17 @@ export const PieceLocationTracker: React.FC<PieceLocationTrackerProps> = ({ proj
       piece.description?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesLocation = selectedLocation === 'all' || 
-      (piece as any).field_location === selectedLocation;
+      piece.field_location === selectedLocation;
     
     return matchesSearch && matchesLocation;
   });
 
   const locationStats = {
-    yard: pieceMarks.filter(p => (p as any).field_location === 'yard').length,
-    staging: pieceMarks.filter(p => (p as any).field_location === 'staging').length,
-    crane_zone: pieceMarks.filter(p => (p as any).field_location === 'crane_zone').length,
-    installed: pieceMarks.filter(p => (p as any).field_location === 'installed').length,
-    unknown: pieceMarks.filter(p => !(p as any).field_location || (p as any).field_location === 'unknown').length,
+    yard: pieceMarks.filter(p => p.field_location === 'yard').length,
+    staging: pieceMarks.filter(p => p.field_location === 'staging').length,
+    crane_zone: pieceMarks.filter(p => p.field_location === 'crane_zone').length,
+    installed: pieceMarks.filter(p => p.field_location === 'installed').length,
+    unknown: pieceMarks.filter(p => !p.field_location || p.field_location === 'unknown').length,
   };
 
   return (

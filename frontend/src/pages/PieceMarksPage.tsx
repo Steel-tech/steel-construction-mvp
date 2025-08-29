@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../components/auth/AuthContext';
+import { useAuth } from '../components/auth/useAuth';
 import { PieceMarkList } from '../components/piecemarks/PieceMarkList';
 import { PieceMarkForm } from '../components/piecemarks/PieceMarkForm';
 import { pieceMarkService } from '../services/pieceMarkService';
