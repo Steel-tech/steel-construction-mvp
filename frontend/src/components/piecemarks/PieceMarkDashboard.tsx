@@ -156,7 +156,7 @@ export const PieceMarkDashboard: React.FC<PieceMarkDashboardProps> = ({
         <div className="relative">
           <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gray-300"></div>
           <div className="space-y-8">
-            {statusConfig.map(({ status, label, color, icon }, index) => {
+            {statusConfig.map(({ status, label, color, icon }) => {
               const count = stats.byStatus[status as PieceMarkStatus];
               return (
                 <div key={status} className="relative flex items-center">

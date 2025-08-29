@@ -13,7 +13,6 @@ export const PieceLocationTracker: React.FC<PieceLocationTrackerProps> = ({ proj
   const [pieceMarks, setPieceMarks] = useState<PieceMark[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<PieceLocation | 'all'>('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedPiece, setSelectedPiece] = useState<PieceMark | null>(null);
   const [movingPiece, setMovingPiece] = useState<string | null>(null);
   const [newLocation, setNewLocation] = useState<PieceLocation>('yard');
   const [loading, setLoading] = useState(false);

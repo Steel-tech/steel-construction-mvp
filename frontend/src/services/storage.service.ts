@@ -42,7 +42,7 @@ class StorageService {
     }
 
     try {
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from(bucket)
         .upload(path, file, {
           cacheControl,

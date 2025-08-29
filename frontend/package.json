@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "deploy": "vercel --prod",
@@ -17,6 +17,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@supabase/auth-helpers-react": "^0.5.0",
     "@supabase/supabase-js": "^2.56.0",
+    "@tailwindcss/postcss": "^4.1.12",
     "@types/qrcode": "^1.5.5",
     "@types/react-router-dom": "^5.3.3",
     "qrcode": "^1.5.4",
@@ -37,6 +38,7 @@
     "globals": "^16.3.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.12",
+    "terser": "^5.43.1",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2"

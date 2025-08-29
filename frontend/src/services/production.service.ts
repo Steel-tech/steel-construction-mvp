@@ -6,7 +6,6 @@ import type {
   StageTransition,
   ProductionIssue,
   ProductionMetrics,
-  ProductionApproval,
   MaterialConsumption,
   ProductionAttachment,
   CreateWorkflowData,
@@ -14,8 +13,6 @@ import type {
   CreateIssueData,
   StageTransitionData,
   WorkflowStatus,
-  TaskStatus,
-  Priority,
   ProductionStats,
   WorkflowUpdateEvent,
   TaskUpdateEvent,
@@ -314,7 +311,7 @@ export class ProductionService {
     return task;
   }
 
-  async assignTask(taskId: string, userId: string): Promise<ProductionTask> {
+  async assignTask(taskId: string): Promise<ProductionTask> {
     return this.updateTask(taskId, { 
       status: 'pending',
       actual_hours: undefined,
@@ -582,7 +579,7 @@ export class ProductionService {
     const fileName = `production/${workflowId}/${Date.now()}-${file.name}`;
     
     // Upload file
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('production-attachments')
       .upload(fileName, file);
 

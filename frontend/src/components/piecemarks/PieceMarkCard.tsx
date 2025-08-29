@@ -95,7 +95,7 @@ export const PieceMarkCard: React.FC<PieceMarkCardProps> = ({
           const fileName = `${pieceMark.project_id}/${pieceMark.id}/${Date.now()}-${file.name}`;
           
           // Upload to Supabase Storage
-          const { data: uploadData, error: uploadError } = await supabase.storage
+          const { error: uploadError } = await supabase.storage
             .from('piece-photos')
             .upload(fileName, file);
 

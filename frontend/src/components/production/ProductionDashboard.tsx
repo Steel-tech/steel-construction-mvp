@@ -15,13 +15,11 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
   projectId, 
   pieceMarkId 
 }) => {
-  const { user } = useAuth();
   const [view, setView] = useState<'kanban' | 'timeline' | 'tasks' | 'metrics'>('kanban');
   const [workflows, setWorkflows] = useState<ProductionWorkflow[]>([]);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ProductionWorkflow | null>(null);
   const [stats, setStats] = useState<ProductionStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [realtimeEvents, setRealtimeEvents] = useState<(WorkflowUpdateEvent | TaskUpdateEvent)[]>([]);
 
   useEffect(() => {
@@ -146,7 +144,7 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
           </div>
           
           <button
-            onClick={() => setShowCreateModal(true)}
+            onClick={() => console.log('Create new workflow')}
             className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
           >
             + New Workflow

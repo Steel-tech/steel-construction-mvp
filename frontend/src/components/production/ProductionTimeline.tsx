@@ -14,7 +14,6 @@ const TimelineStage: React.FC<TimelineStageProps> = ({
   stage, 
   status, 
   transition,
-  isFirst = false,
   isLast = false 
 }) => {
   const getStatusColor = () => {

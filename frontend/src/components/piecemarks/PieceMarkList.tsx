@@ -34,16 +34,7 @@ export const PieceMarkList: React.FC<PieceMarkListProps> = ({
     }
   };
 
-  const getStatusIcon = (status: PieceMarkStatus) => {
-    switch (status) {
-      case 'not_started': return '⏳';
-      case 'fabricating': return '🔨';
-      case 'completed': return '✅';
-      case 'shipped': return '🚚';
-      case 'installed': return '🏗️';
-      default: return '📋';
-    }
-  };
+  // Removed unused getStatusIcon function
 
   const handleSelectAll = () => {
     if (selectedMarks.length === pieceMarks.length) {

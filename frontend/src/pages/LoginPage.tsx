@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LoginForm } from '../components/auth/LoginForm';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const [showingLogin, setShowingLogin] = useState(true);
 
   const handleSuccess = () => {
     navigate('/');

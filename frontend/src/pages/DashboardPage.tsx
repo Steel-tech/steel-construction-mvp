@@ -3,7 +3,7 @@ import { useAuth } from '../components/auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export const DashboardPage: React.FC = () => {
-  const { user, profile, signOut } = useAuth();
+  const { profile, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
