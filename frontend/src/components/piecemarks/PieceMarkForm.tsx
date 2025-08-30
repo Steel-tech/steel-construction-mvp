@@ -38,8 +38,9 @@ export const PieceMarkForm: React.FC<PieceMarkFormProps> = ({
         ...formData,
         project_id: projectId,
       });
-    } catch (err: any) {
-      setError(err.message || 'Failed to save piece mark');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to save piece mark';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

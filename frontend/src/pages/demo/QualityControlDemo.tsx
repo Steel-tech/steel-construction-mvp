@@ -115,7 +115,7 @@ export const QualityControlDemo: React.FC = () => {
               {inspectionTypes.map((type) => (
                 <div
                   key={type.value}
-                  onClick={() => setSelectedInspectionType(type.value as any)}
+                  onClick={() => setSelectedInspectionType(type.value as 'general' | 'welding' | 'dimensional')}
                   className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
                     selectedInspectionType === type.value
                       ? 'border-indigo-500 bg-indigo-50'
@@ -147,9 +147,9 @@ export const QualityControlDemo: React.FC = () => {
             <QualityChecklist
               pieceMark={{
                 ...samplePieceMark,
-                // Override inspection type based on selection
-                inspection_type: selectedInspectionType,
-              } as any}
+                // Add custom property for demo
+                ...(selectedInspectionType && { inspection_type: selectedInspectionType }),
+              } as PieceMark & { inspection_type?: 'general' | 'welding' | 'dimensional' }}
               onInspectionComplete={handleInspectionComplete}
               onClose={() => setShowInspection(false)}
             />

@@ -131,7 +131,7 @@ export class ProductionService {
     workflowId: string,
     status: WorkflowStatus
   ): Promise<ProductionWorkflow> {
-    const updates: any = { status };
+    const updates: Partial<ProductionWorkflow> = { status };
 
     if (status === 'in_progress' && !updates.actual_start) {
       updates.actual_start = new Date().toISOString();
@@ -232,7 +232,7 @@ export class ProductionService {
       { stage: 'Painting/Galvanizing', tasks: ['Surface preparation', 'Apply coating', 'Final inspection'] },
     ];
 
-    const tasks: any[] = [];
+    const tasks: Array<Partial<ProductionTask>> = [];
     
     for (const template of taskTemplates) {
       const stage = stages.find(s => s.name === template.stage);
@@ -288,7 +288,7 @@ export class ProductionService {
   }
 
   async updateTask(taskId: string, data: UpdateTaskData): Promise<ProductionTask> {
-    const updates: any = { ...data };
+    const updates: Partial<ProductionTask> & { started_at?: string; completed_at?: string } = { ...data };
     
     if (data.status === 'in_progress' && !updates.started_at) {
       updates.started_at = new Date().toISOString();
@@ -363,7 +363,7 @@ export class ProductionService {
     status: 'open' | 'in_progress' | 'resolved' | 'closed',
     resolution?: string
   ): Promise<ProductionIssue> {
-    const updates: any = { status };
+    const updates: Partial<ProductionIssue> & { resolution?: string; resolved_at?: string } = { status };
     
     if (resolution) {
       updates.resolution = resolution;

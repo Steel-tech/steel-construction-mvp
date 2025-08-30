@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/useAuth';
-import { supabase } from '../lib/supabase';
-import type { Project } from '../types/database.types';
+import { projectsService } from '../services/projects.service';
+import type { Project } from '../services/api.service';
 
 export const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -17,15 +17,11 @@ export const ProjectsPage: React.FC = () => {
 
   const fetchProjects = async () => {
     try {
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setProjects(data || []);
-    } catch (err: any) {
-      setError(err.message);
+      const projects = await projectsService.getAll();
+      setProjects(projects);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch projects';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -140,7 +136,7 @@ export const ProjectsPage: React.FC = () => {
                             >
                               📦 Piece Marks
                             </button>
-                            {['admin', 'project_manager', 'field'].includes(profile?.role || '') && (
+                            {['admin', 'project_manager', 'field'].includes(user?.role || '') && (
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();

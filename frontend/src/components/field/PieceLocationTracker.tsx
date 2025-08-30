@@ -196,9 +196,9 @@ export const PieceLocationTracker: React.FC<PieceLocationTrackerProps> = ({ proj
                 <p className="text-sm text-gray-600">{piece.description}</p>
               </div>
               <span className={`px-2 py-1 text-xs rounded-full ${
-                getLocationColor((piece as any).field_location || 'unknown')
+                getLocationColor(piece.field_location || 'unknown')
               }`}>
-                {getLocationIcon((piece as any).field_location || 'unknown')} {(piece as any).field_location || 'Unknown'}
+                {getLocationIcon(piece.field_location || 'unknown')} {piece.field_location || 'Unknown'}
               </span>
             </div>
 
@@ -245,7 +245,7 @@ export const PieceLocationTracker: React.FC<PieceLocationTrackerProps> = ({ proj
               <button
                 onClick={() => {
                   setMovingPiece(piece.id);
-                  setNewLocation((piece as any).field_location || 'yard');
+                  setNewLocation(piece.field_location || 'yard');
                 }}
                 className="w-full px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
               >

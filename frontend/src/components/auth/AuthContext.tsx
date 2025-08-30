@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import type { Session, User } from '@supabase/supabase-js';
-import { supabase } from '../../lib/supabase';
-import type { Profile } from '../../types/database.types';
+import { apiService, type User } from '../../services/api.service';
 import { AuthContext } from './AuthContextBase';
 
 interface AuthProviderProps {
@@ -9,64 +7,56 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) throw error;
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
-  };
-
+  // Check if user is authenticated on component mount
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
+    const checkAuthStatus = () => {
+      const token = apiService.getToken();
+      if (token) {
+        // Token exists, but we need to verify it's still valid
+        // For now, we'll assume it's valid if it exists
+        // In a production app, you might want to validate the token with the server
+        try {
+          // Basic JWT token parsing to get user info (without verification)
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          setUser({
+            id: payload.userId,
+            email: payload.email || '',
+            full_name: payload.full_name || '',
+            role: payload.role || 'client',
+            created_at: payload.iat ? new Date(payload.iat * 1000).toISOString() : new Date().toISOString()
+          });
+        } catch (error) {
+          console.error('Invalid token format:', error);
+          apiService.clearToken();
+          setUser(null);
+        }
       }
       setLoading(false);
-    });
+    };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
-        setProfile(null);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    checkAuthStatus();
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string, role = 'client') => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      const response = await apiService.register({
         email,
         password,
-        options: {
-          data: {
-            full_name: fullName,
-            role,
-          },
-        },
+        name: fullName,
+        role,
       });
 
-      if (error) throw error;
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      if (response.data) {
+        setUser(response.data.user);
+      }
     } catch (error) {
       console.error('Error signing up:', error);
       throw error;
@@ -78,12 +68,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signIn = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const response = await apiService.login({ email, password });
 
-      if (error) throw error;
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      if (response.data) {
+        setUser(response.data.user);
+      }
     } catch (error) {
       console.error('Error signing in:', error);
       throw error;
@@ -95,8 +88,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signOut = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      await apiService.logout();
+      setUser(null);
     } catch (error) {
       console.error('Error signing out:', error);
       throw error;
@@ -105,35 +98,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const updateProfile = async (updates: Partial<Profile>) => {
-    if (!user) throw new Error('No user logged in');
-    
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', user.id);
-
-      if (error) throw error;
-      
-      if (profile) {
-        setProfile({ ...profile, ...updates });
-      }
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      throw error;
-    }
-  };
-
   const value = {
-    session,
     user,
-    profile,
     loading,
     signUp,
     signIn,
     signOut,
-    updateProfile,
+    isAuthenticated: !!user,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

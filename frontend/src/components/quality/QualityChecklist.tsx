@@ -41,7 +41,7 @@ export const QualityChecklist: React.FC<QualityChecklistProps> = ({
 
   useEffect(() => {
     fetchTemplates();
-  }, [inspectionType]);
+  }, [fetchTemplates]);
 
   const fetchTemplates = async () => {
     try {
@@ -291,7 +291,7 @@ export const QualityChecklist: React.FC<QualityChecklistProps> = ({
                 'photos', 'summary'].map(tab => (
                 <button
                   key={tab}
-                  onClick={() => setActiveTab(tab as any)}
+                  onClick={() => setActiveTab(tab as 'checklist' | 'welding' | 'dimensional' | 'photos' | 'summary')}
                   className={`px-4 py-2 rounded-t-lg font-medium whitespace-nowrap ${
                     activeTab === tab
                       ? 'bg-white text-indigo-600 border-t-2 border-indigo-600'

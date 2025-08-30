@@ -139,7 +139,7 @@ export const ProductionTimeline: React.FC<ProductionTimelineProps> = ({
 
   useEffect(() => {
     fetchTimelineData();
-  }, [workflow.id]);
+  }, [fetchTimelineData]);
 
   const fetchTimelineData = async () => {
     setLoading(true);

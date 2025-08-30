@@ -6,7 +6,6 @@ import type {
   SecurityRuleRequest,
   SecurityAlert,
   SecurityMetrics,
-  SecurityConfiguration,
   IPWhitelist,
   IPBlacklist,
   SecuritySession,
@@ -130,7 +129,6 @@ export class SecurityService {
   // ==================== Security Rules ====================
 
   async createSecurityRule(rule: SecurityRuleRequest): Promise<SecurityRule> {
-    const user = await supabase.auth.getUser();
     const newRule: Omit<SecurityRule, 'id' | 'created_at' | 'updated_at'> = {
       ...rule,
       enabled: true,
@@ -196,7 +194,7 @@ export class SecurityService {
     });
   }
 
-  private evaluateCondition(condition: any, value: any): boolean {
+  private evaluateCondition(condition: Record<string, unknown>, value: unknown): boolean {
     const { operator, value: conditionValue, case_sensitive } = condition;
     
     let compareValue = value;
@@ -227,8 +225,8 @@ export class SecurityService {
     }
   }
 
-  private getEventFieldValue(event: SecurityEvent, field: string): any {
-    return (event as any)[field] || event.metadata?.[field];
+  private getEventFieldValue(event: SecurityEvent, field: string): unknown {
+    return (event as Record<string, unknown>)[field] || event.metadata?.[field];
   }
 
   private async executeRuleActions(rule: SecurityRule, event: SecurityEvent): Promise<void> {
@@ -322,7 +320,7 @@ export class SecurityService {
     notes?: string
   ): Promise<SecurityAlert> {
     const user = await supabase.auth.getUser();
-    const updates: any = { status };
+    const updates: Partial<SecurityAlert> = { status };
 
     if (status === 'acknowledged') {
       updates.acknowledged_at = new Date().toISOString();
@@ -447,7 +445,7 @@ export class SecurityService {
       critical: 0,
     };
 
-    const eventsByType: Record<SecurityEventType, number> = {} as any;
+    const eventsByType: Partial<Record<SecurityEventType, number>> = {};
 
     let blockedRequests = 0;
     let failedLogins = 0;
@@ -601,8 +599,8 @@ export class SecurityService {
     action: string,
     resourceType: string,
     resourceId?: string,
-    oldValues?: Record<string, any>,
-    newValues?: Record<string, any>
+    oldValues?: Record<string, unknown>,
+    newValues?: Record<string, unknown>
   ): Promise<void> {
     const user = await supabase.auth.getUser();
     const auditLog: Omit<SecurityAuditLog, 'id' | 'timestamp'> = {

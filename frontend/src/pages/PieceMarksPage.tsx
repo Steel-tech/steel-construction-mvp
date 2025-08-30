@@ -4,7 +4,7 @@ import { useAuth } from '../components/auth/useAuth';
 import { PieceMarkList } from '../components/piecemarks/PieceMarkList';
 import { PieceMarkForm } from '../components/piecemarks/PieceMarkForm';
 import { pieceMarkService } from '../services/pieceMarkService';
-import type { PieceMark, PieceMarkStatus } from '../types/database.types';
+import type { PieceMark, PieceMarkStatus, Project } from '../types/database.types';
 import { supabase } from '../lib/supabase';
 
 export const PieceMarksPage: React.FC = () => {
@@ -19,7 +19,7 @@ export const PieceMarksPage: React.FC = () => {
   const [editingMark, setEditingMark] = useState<PieceMark | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<PieceMarkStatus | 'all'>('all');
-  const [project, setProject] = useState<any>(null);
+  const [project, setProject] = useState<Project | null>(null);
 
   const canEdit = ['admin', 'project_manager', 'shop'].includes(profile?.role || '');
 
@@ -28,11 +28,11 @@ export const PieceMarksPage: React.FC = () => {
       fetchProject();
       fetchPieceMarks();
     }
-  }, [projectId]);
+  }, [projectId, fetchProject, fetchPieceMarks]);
 
   useEffect(() => {
     filterMarks();
-  }, [pieceMarks, searchTerm, statusFilter]);
+  }, [filterMarks]);
 
   const fetchProject = async () => {
     if (!projectId) return;
@@ -46,8 +46,9 @@ export const PieceMarksPage: React.FC = () => {
 
       if (error) throw error;
       setProject(data);
-    } catch (err: any) {
-      console.error('Error fetching project:', err);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Error fetching project';
+      console.error('Error fetching project:', errorMessage);
     }
   };
 
@@ -58,8 +59,9 @@ export const PieceMarksPage: React.FC = () => {
     try {
       const data = await pieceMarkService.getByProject(projectId);
       setPieceMarks(data || []);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch piece marks';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -87,7 +89,7 @@ export const PieceMarksPage: React.FC = () => {
 
   const handleCreate = async (data: Partial<PieceMark>) => {
     try {
-      await pieceMarkService.create(data as any);
+      await pieceMarkService.create(data as Omit<PieceMark, 'id' | 'created_at' | 'updated_at' | 'total_weight'>);
       setShowForm(false);
       fetchPieceMarks();
     } catch (error) {

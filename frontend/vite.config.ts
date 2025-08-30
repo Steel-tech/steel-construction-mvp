@@ -10,6 +10,10 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
     },
   },
+  // Security: Define allowed environment variables
+  define: {
+    __DEV__: JSON.stringify(process.env.NODE_ENV === 'development'),
+  },
   build: {
     // Enable code splitting
     rollupOptions: {

@@ -5,6 +5,7 @@ import { DeliveryReceiving } from '../components/field/DeliveryReceiving';
 import { PieceLocationTracker } from '../components/field/PieceLocationTracker';
 import { CrewAssignmentComponent } from '../components/field/CrewAssignment';
 import { supabase } from '../lib/supabase';
+import type { Project } from '../types/database.types';
 
 type TabType = 'overview' | 'deliveries' | 'locations' | 'crews';
 
@@ -13,7 +14,7 @@ export const FieldDashboard: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { profile } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
-  const [project, setProject] = useState<any>(null);
+  const [project, setProject] = useState<Project | null>(null);
   const [stats, setStats] = useState({
     totalPieces: 0,
     receivedPieces: 0,
@@ -27,7 +28,7 @@ export const FieldDashboard: React.FC = () => {
       fetchProject();
       fetchStats();
     }
-  }, [projectId]);
+  }, [projectId, fetchProject, fetchStats]);
 
   const fetchProject = async () => {
     if (!projectId) return;

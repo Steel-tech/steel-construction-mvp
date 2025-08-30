@@ -43,7 +43,7 @@ export interface SecurityEvent {
   method?: string;
   url?: string;
   project_id?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   timestamp: string;
   resolved_at?: string;
   resolved_by?: string;
@@ -72,7 +72,7 @@ export interface SecurityRuleCondition {
 
 export interface SecurityRuleAction {
   type: 'block' | 'alert' | 'log' | 'rate_limit' | 'captcha' | 'mfa_required';
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
 }
 
 export interface SecurityAlert {
@@ -160,8 +160,8 @@ export interface SecurityAuditLog {
   action: string;
   resource_type: string;
   resource_id?: string;
-  old_values?: Record<string, any>;
-  new_values?: Record<string, any>;
+  old_values?: Record<string, unknown>;
+  new_values?: Record<string, unknown>;
   ip_address?: string;
   user_agent?: string;
   project_id?: string;
@@ -254,7 +254,7 @@ export interface SecurityEventRequest {
   level: SecurityLevel;
   title: string;
   description: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   resource?: string;
   method?: string;
   url?: string;
@@ -272,7 +272,7 @@ export interface SecurityRuleRequest {
 // Hook return types
 export interface UseSecurityMonitor {
   recordEvent: (event: SecurityEventRequest) => Promise<void>;
-  checkRule: (ruleName: string, context: Record<string, any>) => boolean;
+  checkRule: (ruleName: string, context: Record<string, unknown>) => boolean;
   isBlocked: (ip: string) => boolean;
   getRiskScore: (userId: string) => number;
 }

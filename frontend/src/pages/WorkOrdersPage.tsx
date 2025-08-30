@@ -14,7 +14,7 @@ export const WorkOrdersPage: React.FC = () => {
 
   useEffect(() => {
     fetchWorkOrders();
-  }, [filter]);
+  }, [fetchWorkOrders]);
 
   const fetchWorkOrders = async () => {
     try {
@@ -31,8 +31,9 @@ export const WorkOrdersPage: React.FC = () => {
 
       if (error) throw error;
       setWorkOrders(data || []);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch work orders';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

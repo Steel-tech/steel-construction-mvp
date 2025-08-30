@@ -221,7 +221,7 @@ export const ProductionTaskList: React.FC<ProductionTaskListProps> = ({
 
   useEffect(() => {
     fetchTasks();
-  }, [workflowId]);
+  }, [fetchTasks]);
 
   const fetchTasks = async () => {
     setLoading(true);

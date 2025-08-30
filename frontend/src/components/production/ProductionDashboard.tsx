@@ -4,7 +4,6 @@ import { ProductionTimeline } from './ProductionTimeline';
 import { ProductionTaskList } from './ProductionTaskList';
 import type { ProductionWorkflow, ProductionStats, WorkflowUpdateEvent, TaskUpdateEvent } from '../../types/production.types';
 import { productionService } from '../../services/production.service';
-import { useAuth } from '../auth/useAuth';
 
 interface ProductionDashboardProps {
   projectId: string;
@@ -34,7 +33,7 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
     return () => {
       unsubscribeWorkflow();
     };
-  }, [projectId]);
+  }, [projectId, fetchData, handleWorkflowUpdate]);
 
   useEffect(() => {
     if (selectedWorkflow) {
@@ -48,7 +47,7 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
         unsubscribeTask();
       };
     }
-  }, [selectedWorkflow?.id]);
+  }, [selectedWorkflow, handleTaskUpdate]);
 
   const fetchData = async () => {
     setLoading(true);

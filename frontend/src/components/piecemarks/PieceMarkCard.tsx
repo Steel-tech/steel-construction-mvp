@@ -3,12 +3,17 @@ import QRCode from 'qrcode';
 import { useDropzone } from 'react-dropzone';
 import type { PieceMark, PieceMarkStatus } from '../../types/database.types';
 import type { PieceLocation } from '../../types/field.types';
+
+// Extend PieceMark to include field_location
+interface PieceMarkWithLocation extends PieceMark {
+  field_location?: PieceLocation;
+}
 import { pieceMarkService } from '../../services/pieceMarkService';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../auth/useAuth';
 
 interface PieceMarkCardProps {
-  pieceMark: PieceMark;
+  pieceMark: PieceMarkWithLocation;
   onUpdate?: (updatedPieceMark: PieceMark) => void;
   onPhotoUpload?: (photoUrl: string) => void;
   showActions?: boolean;
@@ -31,7 +36,7 @@ export const PieceMarkCard: React.FC<PieceMarkCardProps> = ({
   const [showPhotoGallery, setShowPhotoGallery] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<PieceMarkStatus>(pieceMark.status);
-  const [currentLocation, setCurrentLocation] = useState<PieceLocation>((pieceMark as any).field_location || 'unknown');
+  const [currentLocation, setCurrentLocation] = useState<PieceLocation>(pieceMark.field_location || 'unknown');
 
   // Generate QR Code
   useEffect(() => {
@@ -62,7 +67,7 @@ export const PieceMarkCard: React.FC<PieceMarkCardProps> = ({
   // Fetch existing photos
   useEffect(() => {
     fetchPhotos();
-  }, [pieceMark.id]);
+  }, [fetchPhotos]);
 
   const fetchPhotos = async () => {
     try {

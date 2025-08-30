@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { DndContext, type DragEndEvent, useDraggable, useDroppable, DragOverlay } from '@dnd-kit/core';
+import { DndContext, type DragEndEvent, type DragStartEvent, useDraggable, useDroppable, DragOverlay } from '@dnd-kit/core';
 import type { ProductionWorkflow, ProductionStage, Priority } from '../../types/production.types';
 import { productionService } from '../../services/production.service';
 
 interface KanbanColumnProps {
   stage: ProductionStage;
   workflows: ProductionWorkflow[];
-  onWorkflowMove: (workflowId: string, toStageId: string) => void;
+  onWorkflowMove?: (workflowId: string, toStageId: string) => void;
 }
 
 interface DraggableCardProps {
@@ -99,7 +99,7 @@ const DraggableCard: React.FC<DraggableCardProps> = ({ workflow }) => {
   );
 };
 
-const KanbanColumn: React.FC<KanbanColumnProps> = ({ stage, workflows, onWorkflowMove }) => {
+const KanbanColumn: React.FC<KanbanColumnProps> = ({ stage, workflows }) => {
   const { setNodeRef, isOver } = useDroppable({
     id: stage.id,
   });
@@ -175,7 +175,7 @@ export const ProductionKanban: React.FC<ProductionKanbanProps> = ({
 
   useEffect(() => {
     fetchData();
-  }, [projectId]);
+  }, [fetchData]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -193,7 +193,7 @@ export const ProductionKanban: React.FC<ProductionKanbanProps> = ({
     }
   };
 
-  const handleDragStart = (event: any) => {
+  const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id);
   };
 

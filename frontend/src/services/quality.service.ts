@@ -378,7 +378,7 @@ export class QualityService {
     const fileName = `inspections/${inspectionId}/${Date.now()}-${photo.name}`;
     
     // Upload to storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('inspection-photos')
       .upload(fileName, photo);
 
