@@ -2,8 +2,8 @@
 
 A production-ready web application for managing steel construction projects, work orders, and piece marks. Built with React, TypeScript, Vite, Express.js, and SQLite/Supabase.
 
-<!-- Auto-updated by Claude Code on 2025-08-30 -->
-<!-- Based on recent production enhancements and security improvements -->
+<!-- Auto-updated by Claude Code on 2025-09-01 -->
+<!-- Based on comprehensive deployment infrastructure and production tooling -->
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![Security](https://img.shields.io/badge/security-enhanced-blue)
@@ -47,12 +47,13 @@ A production-ready web application for managing steel construction projects, wor
 - **Express.js** with Node.js
 - **SQLite** database (development) / **PostgreSQL** (production)
 - **JWT Authentication** with refresh tokens
-- **Winston** logging system
+- **Winston** logging system with structured logging
 - **Helmet.js** security headers
 - **Rate limiting** per endpoint
 - **PM2** process management
-- **Docker** containerization support
+- **Docker** containerization with multi-stage builds
 - **Sentry** error monitoring integration
+- **Artillery** load testing framework
 
 ### Database Schema
 - Users/Profiles management
@@ -69,6 +70,7 @@ A production-ready web application for managing steel construction projects, wor
 - SQLite (development) or PostgreSQL (production)
 - PM2 (optional, for process management)
 - Docker & Docker Compose (optional, for containerization)
+- Artillery (optional, for load testing)
 
 ### Installation
 
@@ -276,12 +278,27 @@ cd load-testing
 docker-compose up -d
 ```
 
+### Multi-Platform Deployment Options
+
+#### Vercel + Railway
+```bash
+./deploy-vercel-railway.sh
+```
+See [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) for details.
+
+#### Render
+Deploy using `render.yaml` configuration.
+
+#### Railway
+Deploy using `railway.json` configuration.
+
 ### Production Deployment
 1. Set production environment variables
 2. Generate new JWT secret
-3. Configure SSL certificates
+3. Configure SSL certificates (see [SSL_SETUP.md](./SSL_SETUP.md))
 4. Deploy with PM2 or Docker
 5. Run health checks
+6. Execute verification script: `./verify-deployment.sh`
 
 See [DEPLOYMENT_READY.md](./DEPLOYMENT_READY.md) for detailed instructions.
 
@@ -319,13 +336,20 @@ For support, please open an issue in the GitHub repository.
 
 ## Documentation
 
-- [Deployment Guide](./DEPLOYMENT_READY.md)
+### Deployment Guides
+- [Complete Deployment Guide](./DEPLOYMENT_READY.md)
+- [Vercel Deployment](./VERCEL_DEPLOYMENT.md)
 - [SSL Setup](./SSL_SETUP.md)
-- [Load Testing Guide](./LOAD_TESTING.md)
 - [Production Checklist](./PRODUCTION_CHECKLIST.md)
+- [Quick Deploy Guide](./DEPLOY_NOW.md)
+
+### Operations
+- [Load Testing Guide](./LOAD_TESTING.md)
+- [Deployment Verification](./verify-deployment.sh)
+- [Production Setup Script](./setup-production.sh)
 
 ---
 
-**Last Updated:** 2025-08-30  
-**Version:** 1.0.0  
+**Last Updated:** 2025-09-01  
+**Version:** 1.2.0  
 **Status:** Production Ready 🚀
