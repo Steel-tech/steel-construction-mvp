@@ -1,0 +1,201 @@
+# Artillery Load Testing Configuration
+# https://artillery.io/docs/
+
+config:
+  target: "http://localhost:5001"
+  
+  # Phases define the load pattern
+  phases:
+    # Warm up phase
+    - duration: 30
+      arrivalRate: 1
+      name: "Warm up"
+    
+    # Ramp up phase
+    - duration: 60
+      arrivalRate: 5
+      rampTo: 10
+      name: "Ramp up"
+    
+    # Sustained load
+    - duration: 120
+      arrivalRate: 10
+      name: "Sustained load"
+    
+    # Spike test
+    - duration: 30
+      arrivalRate: 20
+      name: "Spike"
+    
+    # Cool down
+    - duration: 30
+      arrivalRate: 5
+      name: "Cool down"
+  
+  # Default headers
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  
+  # Variables for test data
+  variables:
+    emails:
+      - "test1@example.com"
+      - "test2@example.com"
+      - "test3@example.com"
+    passwords:
+      - "Test@123456"
+      - "Test@234567"
+      - "Test@345678"
+  
+  # Plugins
+  plugins:
+    # Metrics plugin for detailed reporting
+    metrics-by-endpoint:
+      useOnlyRequestNames: true
+  
+  # Processor for custom logic
+  processor: "./load-test-processor.js"
+
+# Test Scenarios
+scenarios:
+  # Health check scenario
+  - name: "Health Check"
+    weight: 20
+    flow:
+      - get:
+          url: "/health"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: status
+      
+      - think: 1
+      
+      - get:
+          url: "/health/ready"
+          expect:
+            - statusCode: 200
+
+  # Authentication flow
+  - name: "User Registration and Login"
+    weight: 10
+    flow:
+      # Register new user
+      - post:
+          url: "/api/v1/auth/register"
+          json:
+            email: "{{ $randomString() }}@loadtest.com"
+            password: "LoadTest@123456"
+            name: "Load Test User"
+            role: "client"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+          expect:
+            - statusCode: 201
+      
+      - think: 2
+      
+      # Login with registered user
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            - json: "$.token"
+              as: "loginToken"
+          expect:
+            - statusCode:
+                - 200
+                - 401
+
+  # API endpoints test
+  - name: "API Operations"
+    weight: 30
+    flow:
+      # Get projects
+      - get:
+          url: "/api/v1/projects"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode:
+                - 200
+                - 401
+      
+      - think: 1
+      
+      # Create project
+      - post:
+          url: "/api/v1/projects"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            name: "Load Test Project {{ $randomNumber(1, 1000) }}"
+            description: "Automated load test project"
+            location: "Test Location"
+            start_date: "2024-01-01"
+            end_date: "2024-12-31"
+            status: "planning"
+          capture:
+            - json: "$.data.id"
+              as: "projectId"
+          expect:
+            - statusCode:
+                - 201
+                - 401
+      
+      - think: 1
+      
+      # Get single project
+      - get:
+          url: "/api/v1/projects/{{ projectId }}"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode:
+                - 200
+                - 404
+                - 401
+
+  # Mixed load scenario
+  - name: "Mixed Operations"
+    weight: 40
+    flow:
+      # Health check
+      - get:
+          url: "/health"
+      
+      - think: 1
+      
+      # API info
+      - get:
+          url: "/api/v1"
+          expect:
+            - statusCode: 200
+      
+      - think: 2
+      
+      # Materials endpoint
+      - get:
+          url: "/api/v1/materials"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode:
+                - 200
+                - 401
+      
+      - think: 1
+      
+      # Work orders endpoint
+      - get:
+          url: "/api/v1/workorders"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode:
+                - 200
+                - 401

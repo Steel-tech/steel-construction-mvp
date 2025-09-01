@@ -11,6 +11,12 @@ require('dotenv').config();
 
 // Import utilities and middleware
 const logger = require('./utils/logger');
+const { 
+    initSentry, 
+    sentryRequestHandler, 
+    sentryTracingHandler, 
+    sentryErrorHandler 
+} = require('./utils/sentry');
 
 // Import routes
 const healthRoutes = require('./routes/health');
@@ -18,6 +24,15 @@ const apiV1Routes = require('./routes/api/v1');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// ========================================
+// SENTRY INITIALIZATION (Must be first)
+// ========================================
+initSentry(app);
+
+// Sentry request handler must be the first middleware
+app.use(sentryRequestHandler());
+app.use(sentryTracingHandler());
 
 // ========================================
 // SECURITY CONFIGURATION
@@ -173,6 +188,9 @@ app.get('/', (req, res) => {
 // ERROR HANDLING
 // ========================================
 
+// Sentry error handler must be before any other error middleware
+app.use(sentryErrorHandler());
+
 // 404 handler
 app.use((req, res) => {
     res.status(404).json({
@@ -293,7 +311,8 @@ const server = app.listen(PORT, () => {
         port: PORT,
         environment: process.env.NODE_ENV || 'development',
         nodeVersion: process.version,
-        pid: process.pid
+        pid: process.pid,
+        sentryEnabled: !!process.env.SENTRY_DSN
     });
     
     // Log all registered routes in development

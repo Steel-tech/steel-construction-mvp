@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: steel-construction-api
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 10000
+      - key: ALLOWED_ORIGINS
+        value: https://steel-construction-mvp.vercel.app
+    healthCheckPath: /health
+
+databases:
+  - name: steel-construction-db
+    plan: free
+    region: oregon
