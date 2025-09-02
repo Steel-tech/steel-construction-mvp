@@ -70,10 +70,13 @@ class ApiService {
 
   constructor() {
     // Use environment variable with fallback
-    this.baseURL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+    this.baseURL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'https://steel-construction-api.onrender.com/api/v1';
     
     // Load token from localStorage on initialization
     this.token = localStorage.getItem('auth_token');
+    
+    // Log for debugging
+    console.log('API Service initialized with baseURL:', this.baseURL);
   }
 
   /**
