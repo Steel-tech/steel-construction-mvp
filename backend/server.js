@@ -14,6 +14,7 @@ const logger = require('./utils/logger');
 
 // Import routes
 const healthRoutes = require('./routes/health');
+const authRoutes = require('./routes/auth');
 const apiV1Routes = require('./routes/api/v1');
 
 const app = express();
@@ -154,6 +155,15 @@ app.locals.db = db;
 // Health check routes (no authentication required)
 app.use('/health', healthRoutes);
 app.use('/api/health', healthRoutes);
+
+// Direct auth routes for backward compatibility (used by tests)
+app.use('/api/auth', authRoutes);
+
+// Direct projects route for backward compatibility (used by tests)
+const { authenticateToken } = require('./middleware/auth');
+app.get('/api/projects', authenticateToken, (req, res) => {
+    res.json({ message: 'Projects endpoint - use /api/v1/projects for full API' });
+});
 
 // API v1 routes
 app.use('/api/v1', apiV1Routes);

@@ -15,11 +15,71 @@
       ],
       "timestamp": "2025-08-29T16:30:51.151Z",
       "context": "Project initialization",
-      "accessCount": 0,
-      "lastAccessed": "2025-08-29T16:30:51.151Z",
+      "accessCount": 1,
+      "lastAccessed": "2025-09-01T14:16:52.188Z",
       "lastVerified": "2025-08-29T16:30:51.151Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1756736543991_0cdyo62fe",
+      "content": "Steel Construction MVP test issues: 1) Tests expect /api/auth routes but server uses /api/v1/auth, 2) DB schema roles mismatch with auth.js roles, 3) Projects schema mismatch between routes and database, 4) Need JWT_SECRET for tests",
+      "type": "general",
+      "tags": [
+        "general",
+        "api",
+        "database",
+        "steel-construction",
+        "testing",
+        "debug",
+        "routes"
+      ],
+      "timestamp": "2025-09-01T14:22:23.990Z",
+      "context": "Debug session for failing tests",
+      "accessCount": 0,
+      "lastAccessed": "2025-09-01T14:22:23.990Z",
+      "lastVerified": "2025-09-01T14:22:23.990Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1756737037452_bjy550t08",
+      "content": "Database SQLITE_READONLY issue: Database opens with write permissions but becomes read-only after db.exec(schema). Issue happens even with explicit chmod 666 on db file. Problem occurs after schema execution in beforeAll hook.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "database",
+        "sqlite",
+        "readonly",
+        "schema",
+        "testing"
+      ],
+      "timestamp": "2025-09-01T14:30:37.452Z",
+      "context": "Steel construction MVP database debugging",
+      "accessCount": 0,
+      "lastAccessed": "2025-09-01T14:30:37.452Z",
+      "lastVerified": "2025-09-01T14:30:37.452Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1756737192945_8w9rfpe09",
+      "content": "Fixed steel construction MVP test failures: 1) Added /api/auth routes to server.js for backward compatibility, 2) Updated database schema with all roles, 3) Fixed projects route to handle client_id/project_manager_id, 4) Fixed database readonly issue with WAL mode pragma, 5) Basic security tests now pass completely",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "api",
+        "database",
+        "steel-construction",
+        "testing",
+        "fixes",
+        "routes",
+        "security"
+      ],
+      "timestamp": "2025-09-01T14:33:12.945Z",
+      "context": "Steel construction MVP test fixes - major progress made",
+      "accessCount": 0,
+      "lastAccessed": "2025-09-01T14:33:12.945Z",
+      "lastVerified": "2025-09-01T14:33:12.945Z",
       "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-29T16:30:51.151Z"
+  "lastUpdated": "2025-09-01T14:33:12.945Z"
 }

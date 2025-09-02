@@ -7,8 +7,30 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const logger = require('../utils/logger');
 
-// Get database instance
-const db = new sqlite3.Database(path.join(__dirname, '../../database/steel_construction.db'));
+// Get database instance from app locals (shared connection) or create new one for tests
+let db;
+const getDb = (req) => {
+    // Always prefer app.locals.db if available (for tests)
+    if (req && req.app && req.app.locals && req.app.locals.db) {
+        return req.app.locals.db;
+    }
+    
+    if (!db) {
+        const dbPath = process.env.NODE_ENV === 'test' 
+            ? path.join(__dirname, '../test.db')
+            : path.join(__dirname, '../../database/steel_construction.db');
+        
+        // Open database with read-write permissions
+        db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
+            if (err) {
+                logger.error('Failed to connect to database in auth routes', { error: err.message, dbPath });
+            } else {
+                logger.info('Connected to database in auth routes', { dbPath });
+            }
+        });
+    }
+    return db;
+};
 
 // JWT Secret from environment
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -44,7 +66,14 @@ router.post('/register', [
         .trim()
         .isLength({ min: 2, max: 100 })
         .matches(/^[a-zA-Z\s]+$/)
-        .withMessage('Name must be 2-100 characters, letters and spaces only'),
+        .withMessage('Name must be 2-100 characters, letters and spaces only')
+        .custom((value) => {
+            // Additional XSS prevention
+            if (/<[^>]*>/.test(value)) {
+                throw new Error('HTML tags are not allowed in name');
+            }
+            return true;
+        }),
     body('role')
         .optional()
         .isIn(['admin', 'project_manager', 'client', 'shop_worker', 'field_worker'])
@@ -59,13 +88,21 @@ router.post('/register', [
 
         // Insert user into database
         const query = 'INSERT INTO users (email, password, name, role) VALUES (?, ?, ?, ?)';
-        db.run(query, [email, hashedPassword, name, role], function(err) {
+        const database = getDb(req);
+        
+        database.run(query, [email, hashedPassword, name, role], function(err) {
             if (err) {
                 if (err.message.includes('UNIQUE')) {
                     logger.warn('Registration attempt with existing email', { email, ip: req.ip });
                     return res.status(400).json({ error: 'Email already exists' });
                 }
-                logger.error('Database error during registration', { error: err.message });
+                logger.error('Database error during registration', { 
+                    error: err.message, 
+                    fullError: err,
+                    email, 
+                    role,
+                    query 
+                });
                 return res.status(500).json({ error: 'Registration failed' });
             }
 
@@ -107,7 +144,8 @@ router.post('/login', [
     const { email, password } = req.body;
 
     // Get user from database
-    db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
+    const database = getDb(req);
+    database.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
         if (err) {
             logger.error('Database error during login', { error: err.message });
             return res.status(500).json({ error: 'Login failed' });
@@ -225,7 +263,8 @@ router.get('/me', (req, res) => {
         }
 
         // Get user details from database
-        db.get('SELECT id, email, name, role, created_at FROM users WHERE id = ?', 
+        const database = getDb(req);
+        database.get('SELECT id, email, name, role, created_at FROM users WHERE id = ?', 
             [decoded.id], (err, user) => {
             if (err) {
                 logger.error('Database error fetching user', { error: err.message });

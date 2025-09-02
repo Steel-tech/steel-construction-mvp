@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
     name TEXT NOT NULL,
-    role TEXT CHECK(role IN ('admin', 'project_manager', 'client')) DEFAULT 'client',
+    role TEXT CHECK(role IN ('admin', 'project_manager', 'client', 'shop_worker', 'field_worker')) DEFAULT 'client',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS progress_updates (
 );
 
 -- Create indexes for better query performance
-CREATE INDEX idx_projects_client ON projects(client_id);
-CREATE INDEX idx_projects_manager ON projects(project_manager_id);
-CREATE INDEX idx_project_materials_project ON project_materials(project_id);
-CREATE INDEX idx_progress_updates_project ON progress_updates(project_id);
+CREATE INDEX IF NOT EXISTS idx_projects_client ON projects(client_id);
+CREATE INDEX IF NOT EXISTS idx_projects_manager ON projects(project_manager_id);
+CREATE INDEX IF NOT EXISTS idx_project_materials_project ON project_materials(project_id);
+CREATE INDEX IF NOT EXISTS idx_progress_updates_project ON progress_updates(project_id);

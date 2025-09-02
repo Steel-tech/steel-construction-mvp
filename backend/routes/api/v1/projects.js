@@ -94,9 +94,10 @@ router.post('/', [
         .isLength({ max: 500 })
         .withMessage('Description must be less than 500 characters'),
     body('location')
+        .optional()
         .trim()
-        .notEmpty()
-        .withMessage('Location is required'),
+        .isLength({ max: 200 })
+        .withMessage('Location must be less than 200 characters'),
     body('start_date')
         .isISO8601()
         .withMessage('Valid start date is required'),
@@ -111,21 +112,36 @@ router.post('/', [
         .optional()
         .isFloat({ min: 0 })
         .withMessage('Budget must be a positive number'),
+    body('client_id')
+        .optional()
+        .isInt({ min: 1 })
+        .withMessage('Client ID must be a positive integer'),
+    body('project_manager_id')
+        .optional()
+        .isInt({ min: 1 })
+        .withMessage('Project Manager ID must be a positive integer'),
     handleValidationErrors
 ], (req, res) => {
-    const { name, description, location, start_date, end_date, status = 'planning', budget } = req.body;
+    const { name, description, location, start_date, end_date, status = 'planning', budget, client_id, project_manager_id } = req.body;
     
     // Validate that end_date is after start_date
-    if (new Date(end_date) <= new Date(start_date)) {
+    if (start_date && end_date && new Date(end_date) <= new Date(start_date)) {
         return res.status(400).json({ error: 'End date must be after start date' });
     }
     
+    // If no client_id provided and user is a client, use their ID
+    const finalClientId = client_id || (req.user.role === 'client' ? req.user.id : null);
+    
+    if (!finalClientId) {
+        return res.status(400).json({ error: 'Client ID is required' });
+    }
+    
     const query = `
-        INSERT INTO projects (name, description, location, start_date, end_date, status, budget)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO projects (name, description, location, start_date, end_date, status, budget, client_id, project_manager_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
-    db.run(query, [name, description, location, start_date, end_date, status, budget], function(err) {
+    db.run(query, [name, description, location, start_date, end_date, status, budget, finalClientId, project_manager_id], function(err) {
         if (err) {
             logger.error('Error creating project', { error: err.message });
             return res.status(500).json({ error: 'Failed to create project' });
@@ -143,7 +159,9 @@ router.post('/', [
                 start_date,
                 end_date,
                 status,
-                budget
+                budget,
+                client_id: finalClientId,
+                project_manager_id
             }
         });
     });

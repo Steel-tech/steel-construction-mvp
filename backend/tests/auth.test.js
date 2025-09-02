@@ -17,21 +17,61 @@ const JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret';
 
 // Test database setup
 const testDbPath = path.join(__dirname, '../test.db');
-const db = new sqlite3.Database(testDbPath);
+
+// Ensure the database file doesn't exist before creating
+if (fs.existsSync(testDbPath)) {
+    fs.unlinkSync(testDbPath);
+}
+
+const db = new sqlite3.Database(testDbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
+    if (err) {
+        console.error('Failed to open test database:', err);
+    } else {
+        // Explicitly set file permissions to be writable
+        try {
+            fs.chmodSync(testDbPath, 0o666);
+        } catch (chmodErr) {
+            console.warn('Could not set database file permissions:', chmodErr.message);
+        }
+    }
+});
 
 // Initialize test database
 const schemaPath = path.join(__dirname, '../../database/schema.sql');
 const schema = fs.readFileSync(schemaPath, 'utf8');
 
 beforeAll((done) => {
-  db.exec(schema, (err) => {
-    if (err) {
-      console.error('Error initializing test database:', err);
-      done(err);
-    } else {
-      done();
-    }
-  });
+  // Ensure database is ready before executing schema
+  setTimeout(() => {
+    // Set WAL mode for better concurrency and avoid readonly issues
+    db.run('PRAGMA journal_mode=WAL', (walErr) => {
+      // Ignore WAL errors - some systems don't support it
+      if (walErr && !walErr.message.includes('I/O error')) {
+        console.warn('Could not set WAL mode:', walErr.message);
+      }
+      
+      db.exec(schema, (err) => {
+        if (err) {
+          console.error('Error initializing test database:', err);
+          done(err);
+        } else {
+          // Test if database is still writable after schema
+          db.run('INSERT INTO users (email, password, name, role) VALUES (?, ?, ?, ?)', 
+            ['test-write@test.com', 'test', 'Test Write', 'client'], (testErr) => {
+            if (testErr) {
+              console.error('Database not writable after schema init:', testErr);
+              done(testErr);
+            } else {
+              // Clean up test data
+              db.run('DELETE FROM users WHERE email = ?', ['test-write@test.com'], () => {
+                done();
+              });
+            }
+          });
+        }
+      });
+    });
+  }, 100);
 });
 
 afterAll((done) => {
@@ -49,139 +89,15 @@ afterAll((done) => {
 // Setup minimal app for testing auth routes
 app.use(express.json({ limit: '10mb' }));
 
-const handleValidationErrors = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ 
-      error: 'Invalid input', 
-      details: errors.array() 
-    });
-  }
-  next();
-};
+// Make database available to routes
+app.locals.db = db;
 
-const authenticateToken = (req, res, next) => {
-  try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+// Import and use the actual auth routes
+const authRoutes = require('../routes/auth');
+app.use('/api/auth', authRoutes);
 
-    if (!token) {
-      return res.status(401).json({ error: 'Access token required' });
-    }
-
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-      if (err) {
-        if (err.name === 'TokenExpiredError') {
-          return res.status(401).json({ error: 'Token expired' });
-        }
-        if (err.name === 'JsonWebTokenError') {
-          return res.status(401).json({ error: 'Invalid token' });
-        }
-        return res.status(403).json({ error: 'Token verification failed' });
-      }
-      req.user = user;
-      next();
-    });
-  } catch (error) {
-    return res.status(500).json({ error: 'Authentication error' });
-  }
-};
-
-// Auth routes for testing
-app.post('/api/auth/register', [
-  body('email')
-    .isEmail()
-    .normalizeEmail()
-    .withMessage('Valid email is required'),
-  body('password')
-    .isLength({ min: 8, max: 128 })
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/) 
-    .withMessage('Password must be 8-128 characters with uppercase, lowercase, number, and special character'),
-  body('name')
-    .trim()
-    .isLength({ min: 2, max: 100 })
-    .matches(/^[a-zA-Z\s]+$/)
-    .withMessage('Name must be 2-100 characters, letters and spaces only'),
-  body('role')
-    .optional()
-    .isIn(['admin', 'project_manager', 'client'])
-    .withMessage('Invalid role'),
-  handleValidationErrors
-], async (req, res) => {
-  const { email, password, name, role = 'client' } = req.body;
-
-  try {
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const query = 'INSERT INTO users (email, password, name, role) VALUES (?, ?, ?, ?)';
-    
-    db.run(query, [email, hashedPassword, name, role], function(err) {
-      if (err) {
-        if (err.message.includes('UNIQUE')) {
-          return res.status(400).json({ error: 'Email already exists' });
-        }
-        return res.status(500).json({ error: 'Registration failed' });
-      }
-
-      const token = jwt.sign(
-        { id: this.lastID, email, role }, 
-        JWT_SECRET, 
-        { expiresIn: '24h' }
-      );
-      res.status(201).json({ 
-        message: 'User registered successfully',
-        token,
-        user: { id: this.lastID, email, name, role }
-      });
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Registration failed' });
-  }
-});
-
-app.post('/api/auth/login', [
-  body('email')
-    .isEmail()
-    .normalizeEmail()
-    .withMessage('Valid email is required'),
-  body('password')
-    .isLength({ min: 1, max: 128 })
-    .withMessage('Password is required'),
-  handleValidationErrors
-], async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const query = 'SELECT * FROM users WHERE email = ?';
-    db.get(query, [email], async (err, user) => {
-      if (err) {
-        return res.status(500).json({ error: 'Login failed' });
-      }
-
-      if (!user) {
-        return res.status(401).json({ error: 'Invalid credentials' });
-      }
-
-      const validPassword = await bcrypt.compare(password, user.password);
-      if (!validPassword) {
-        return res.status(401).json({ error: 'Invalid credentials' });
-      }
-
-      const token = jwt.sign(
-        { id: user.id, email: user.email, role: user.role }, 
-        JWT_SECRET,
-        { expiresIn: '24h' }
-      );
-      res.json({ 
-        message: 'Login successful',
-        token,
-        user: { id: user.id, email: user.email, name: user.name, role: user.role }
-      });
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Login failed' });
-  }
-});
-
+// Add a simple protected route for testing
+const { authenticateToken } = require('../middleware/auth');
 app.get('/api/protected', authenticateToken, (req, res) => {
   res.json({ message: 'Protected route accessed', user: req.user });
 });

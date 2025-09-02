@@ -17,20 +17,34 @@ const JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret';
 
 // Test database setup
 const testDbPath = path.join(__dirname, '../security-test.db');
-const db = new sqlite3.Database(testDbPath);
+const db = new sqlite3.Database(testDbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
+    if (err) {
+        console.error('Failed to open security test database:', err);
+    } else {
+        console.log('Security test database opened successfully with write permissions');
+    }
+});
 
 // Initialize test database
 const schemaPath = path.join(__dirname, '../../database/schema.sql');
 const schema = fs.readFileSync(schemaPath, 'utf8');
 
 beforeAll((done) => {
-  db.exec(schema, (err) => {
-    if (err) {
-      console.error('Error initializing test database:', err);
-      done(err);
-    } else {
-      done();
+  // Set WAL mode for better concurrency and avoid readonly issues
+  db.run('PRAGMA journal_mode=WAL', (walErr) => {
+    // Ignore WAL errors - some systems don't support it
+    if (walErr && !walErr.message.includes('I/O error')) {
+      console.warn('Could not set WAL mode:', walErr.message);
     }
+    
+    db.exec(schema, (err) => {
+      if (err) {
+        console.error('Error initializing test database:', err);
+        done(err);
+      } else {
+        done();
+      }
+    });
   });
 });
 
@@ -80,86 +94,30 @@ app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '10mb' }));
 
-const handleValidationErrors = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ 
-      error: 'Invalid input', 
-      details: errors.array() 
-    });
-  }
-  next();
-};
+// Make database available to routes
+app.locals.db = db;
 
-const authenticateToken = (req, res, next) => {
-  try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+// Import and use the actual routes
+const authRoutes = require('../routes/auth');
+const { authenticateToken } = require('../middleware/auth');
 
-    if (!token) {
-      return res.status(401).json({ error: 'Access token required' });
-    }
+app.use('/api/auth', authRoutes);
 
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-      if (err) {
-        if (err.name === 'TokenExpiredError') {
-          return res.status(401).json({ error: 'Token expired' });
-        }
-        if (err.name === 'JsonWebTokenError') {
-          return res.status(401).json({ error: 'Invalid token' });
-        }
-        return res.status(403).json({ error: 'Token verification failed' });
-      }
-      req.user = user;
-      next();
-    });
-  } catch (error) {
-    return res.status(500).json({ error: 'Authentication error' });
-  }
-};
-
-// Test routes
-app.post('/api/auth/register', [
-  body('email').isEmail().normalizeEmail(),
-  body('password').isLength({ min: 8, max: 128 }),
-  body('name').trim().isLength({ min: 2, max: 100 }),
-  handleValidationErrors
-], async (req, res) => {
-  const { email, password, name, role = 'client' } = req.body;
-
-  try {
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const query = 'INSERT INTO users (email, password, name, role) VALUES (?, ?, ?, ?)';
-    
-    db.run(query, [email, hashedPassword, name, role], function(err) {
-      if (err) {
-        if (err.message.includes('UNIQUE')) {
-          return res.status(400).json({ error: 'Email already exists' });
-        }
-        return res.status(500).json({ error: 'Registration failed' });
-      }
-
-      const token = jwt.sign(
-        { id: this.lastID, email, role }, 
-        JWT_SECRET, 
-        { expiresIn: '24h' }
-      );
-      res.status(201).json({ 
-        message: 'User registered successfully',
-        token,
-        user: { id: this.lastID, email, name, role }
-      });
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Registration failed' });
-  }
-});
-
+// Add projects route for testing
 app.post('/api/projects', [
   authenticateToken,
   body('name').trim().isLength({ min: 1, max: 200 }),
   body('client_id').isInt({ min: 1 }),
-  handleValidationErrors
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        error: 'Invalid input', 
+        details: errors.array() 
+      });
+    }
+    next();
+  }
 ], (req, res) => {
   const { name, description, client_id, project_manager_id, status, start_date, end_date, budget } = req.body;
 
@@ -170,7 +128,8 @@ app.post('/api/projects', [
   const query = `INSERT INTO projects (name, description, client_id, project_manager_id, status, start_date, end_date, budget) 
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
   
-  db.run(query, [name, description, client_id, project_manager_id, status, start_date, end_date, budget], function(err) {
+  const database = req.app.locals.db;
+  database.run(query, [name, description, client_id, project_manager_id, status, start_date, end_date, budget], function(err) {
     if (err) {
       return res.status(500).json({ error: 'Database error' });
     }
