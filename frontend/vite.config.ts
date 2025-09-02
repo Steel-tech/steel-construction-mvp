@@ -27,7 +27,7 @@ export default defineConfig({
       },
     },
     // Optimize bundle size
-    minify: 'terser',
+    minify: true,
     // Generate source maps for production debugging
     sourcemap: true,
     // Set chunk size warning limit
