@@ -14,6 +14,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const checkAuthStatus = () => {
       try {
+        // Check for demo mode first
+        const urlParams = new URLSearchParams(window.location.search);
+        const isDemoMode = urlParams.get('demo') === 'true' || localStorage.getItem('demo_mode') === 'true';
+        
+        if (isDemoMode) {
+          // Set demo user immediately
+          const demoUser: User = {
+            id: 'demo-user-001',
+            email: 'demo@steelconstruction.com',
+            full_name: 'Demo User',
+            role: 'admin', // Give admin role to see all features
+            created_at: new Date().toISOString()
+          };
+          setUser(demoUser);
+          localStorage.setItem('demo_mode', 'true');
+          console.log('Demo mode activated');
+          setLoading(false);
+          return;
+        }
+        
         const token = apiService.getToken();
         if (token) {
           // Token exists, but we need to verify it's still valid

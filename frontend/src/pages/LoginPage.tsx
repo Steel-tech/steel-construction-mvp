@@ -28,16 +28,18 @@ export const LoginPage: React.FC = () => {
 
       <LoginForm onSuccess={handleSuccess} />
 
-      {/* Demo Credentials */}
+      {/* Demo Access */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md mt-4">
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm font-medium text-blue-900 mb-2">Demo Credentials</p>
-          <div className="text-xs text-blue-700 space-y-1">
-            <p>Email: demo@example.com</p>
-            <p>Password: demo123</p>
-          </div>
-          <p className="text-xs text-blue-600 mt-2">
-            Or <Link to="/signup" className="underline font-medium">create a new account</Link>
+        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg p-4 shadow-lg">
+          <p className="text-white font-bold text-center mb-3">🚀 Quick Demo Access</p>
+          <a 
+            href="/?demo=true" 
+            className="block w-full text-center bg-white text-blue-600 font-bold py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Enter Demo Mode
+          </a>
+          <p className="text-white text-xs text-center mt-2">
+            No login required - See the full dashboard instantly
           </p>
         </div>
       </div>

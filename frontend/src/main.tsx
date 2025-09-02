@@ -1,10 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-// TEMPORARILY using SimpleApp to debug
-import { SimpleApp } from './SimpleApp.tsx'
-// import App from './App.tsx'
-// import ErrorBoundary from './components/ErrorBoundary.tsx'
+import App from './App.tsx'
+import ErrorBoundary from './components/ErrorBoundary.tsx'
 
 // Add debugging
 console.log('main.tsx loading...');
