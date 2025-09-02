@@ -117,32 +117,54 @@ app.use('/api/v1/auth/', authLimiter);
 // DATABASE INITIALIZATION
 // ========================================
 
-const dbPath = process.env.DATABASE_PATH || path.join(__dirname, '../database/steel_construction.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        logger.error('Failed to connect to database', { error: err.message });
-        process.exit(1);
-    }
-    logger.info('Connected to SQLite database', { path: dbPath });
-});
+let db;
 
-// Initialize database schema
-const schemaPath = path.join(__dirname, '../database/schema.sql');
-if (fs.existsSync(schemaPath)) {
-    const schema = fs.readFileSync(schemaPath, 'utf8');
-    db.exec(schema, (err) => {
+// Check if DATABASE_URL is provided (production/Render)
+if (process.env.DATABASE_URL) {
+    // Production: Use PostgreSQL (this will need pg module in the future)
+    logger.info('DATABASE_URL detected - PostgreSQL support not yet implemented');
+    logger.warn('Falling back to SQLite for now - this will fail in production');
+    
+    // For now, still use SQLite but warn about the issue
+    const dbPath = process.env.DATABASE_PATH || path.join(__dirname, '../database/steel_construction.db');
+    db = new sqlite3.Database(dbPath, (err) => {
         if (err) {
-            if (err.message.includes('already exists')) {
-                logger.info('Database tables already exist');
-            } else {
-                logger.error('Error initializing database', { error: err.message });
-            }
-        } else {
-            logger.info('Database schema initialized successfully');
+            logger.error('Failed to connect to database', { error: err.message });
+            process.exit(1);
         }
+        logger.info('Connected to SQLite database (fallback)', { path: dbPath });
     });
 } else {
-    logger.warn('Database schema file not found', { path: schemaPath });
+    // Development: Use SQLite
+    const dbPath = process.env.DATABASE_PATH || path.join(__dirname, '../database/steel_construction.db');
+    db = new sqlite3.Database(dbPath, (err) => {
+        if (err) {
+            logger.error('Failed to connect to database', { error: err.message });
+            process.exit(1);
+        }
+        logger.info('Connected to SQLite database', { path: dbPath });
+    });
+}
+
+// Initialize database schema (SQLite only for now)
+if (!process.env.DATABASE_URL) {
+    const schemaPath = path.join(__dirname, '../database/schema.sql');
+    if (fs.existsSync(schemaPath)) {
+        const schema = fs.readFileSync(schemaPath, 'utf8');
+        db.exec(schema, (err) => {
+            if (err) {
+                if (err.message.includes('already exists')) {
+                    logger.info('Database tables already exist');
+                } else {
+                    logger.error('Error initializing database', { error: err.message });
+                }
+            } else {
+                logger.info('Database schema initialized successfully');
+            }
+        });
+    } else {
+        logger.warn('Database schema file not found', { path: schemaPath });
+    }
 }
 
 // Make database available to routes
