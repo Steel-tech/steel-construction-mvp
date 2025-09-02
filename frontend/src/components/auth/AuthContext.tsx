@@ -13,31 +13,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Check if user is authenticated on component mount
   useEffect(() => {
     const checkAuthStatus = () => {
-      const token = apiService.getToken();
-      if (token) {
-        // Token exists, but we need to verify it's still valid
-        // For now, we'll assume it's valid if it exists
-        // In a production app, you might want to validate the token with the server
-        try {
-          // Basic JWT token parsing to get user info (without verification)
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          setUser({
-            id: payload.userId,
-            email: payload.email || '',
-            full_name: payload.full_name || '',
-            role: payload.role || 'client',
-            created_at: payload.iat ? new Date(payload.iat * 1000).toISOString() : new Date().toISOString()
-          });
-        } catch (error) {
-          console.error('Invalid token format:', error);
-          apiService.clearToken();
-          setUser(null);
+      try {
+        const token = apiService.getToken();
+        if (token) {
+          // Token exists, but we need to verify it's still valid
+          // For now, we'll assume it's valid if it exists
+          // In a production app, you might want to validate the token with the server
+          try {
+            // Basic JWT token parsing to get user info (without verification)
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+              throw new Error('Invalid token format');
+            }
+            const payload = JSON.parse(atob(parts[1]));
+            setUser({
+              id: payload.userId || payload.sub || '',
+              email: payload.email || '',
+              full_name: payload.full_name || payload.name || '',
+              role: payload.role || 'client',
+              created_at: payload.iat ? new Date(payload.iat * 1000).toISOString() : new Date().toISOString()
+            });
+          } catch (error) {
+            console.error('Invalid token format:', error);
+            apiService.clearToken();
+            setUser(null);
+          }
         }
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        setUser(null);
+      } finally {
+        // Always set loading to false to prevent infinite loading
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    checkAuthStatus();
+    // Small delay to ensure DOM is ready
+    setTimeout(checkAuthStatus, 0);
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string, role = 'client') => {
