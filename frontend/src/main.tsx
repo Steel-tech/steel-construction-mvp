@@ -1,7 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
+// Using DemoApp for now to ensure it works
+import { DemoApp } from './DemoApp.tsx'
 import ErrorBoundary from './components/ErrorBoundary.tsx'
 
 // Add debugging
@@ -30,10 +31,10 @@ const initApp = () => {
   console.log('Root element found, mounting React...');
   
   try {
-    // Use SimpleApp for now to bypass all authentication
+    // Use DemoApp - the professional dashboard
     createRoot(rootElement).render(
       <StrictMode>
-        <SimpleApp />
+        <DemoApp />
       </StrictMode>,
     );
     console.log('React app mounted successfully');
