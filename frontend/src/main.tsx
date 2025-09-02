@@ -1,8 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
-import ErrorBoundary from './components/ErrorBoundary.tsx'
+// TEMPORARILY using SimpleApp to debug
+import { SimpleApp } from './SimpleApp.tsx'
+// import App from './App.tsx'
+// import ErrorBoundary from './components/ErrorBoundary.tsx'
 
 // Add debugging
 console.log('main.tsx loading...');
@@ -30,11 +32,10 @@ const initApp = () => {
   console.log('Root element found, mounting React...');
   
   try {
+    // Use SimpleApp for now to bypass all authentication
     createRoot(rootElement).render(
       <StrictMode>
-        <ErrorBoundary>
-          <App />
-        </ErrorBoundary>
+        <SimpleApp />
       </StrictMode>,
     );
     console.log('React app mounted successfully');
