@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/useAuth';
 import { projectsService } from '../services/projects.service';
 import type { Project } from '../services/api.service';
+import { AppLayout } from '../components/layout/AppLayout';
 
 export const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -38,34 +39,8 @@ export const ProjectsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navigation Header */}
-      <nav className="bg-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/')}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                ← Back to Dashboard
-              </button>
-              <h1 className="text-xl font-semibold">Projects</h1>
-            </div>
-            
-            {['admin', 'project_manager'].includes(profile?.role || '') && (
-              <div className="flex items-center">
-                <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium">
-                  New Project
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <AppLayout title="Projects">
+      <main className="py-6">
         <div className="px-4 py-6 sm:px-0">
           {loading ? (
             <div className="flex justify-center items-center h-64">
@@ -167,6 +142,6 @@ export const ProjectsPage: React.FC = () => {
           )}
         </div>
       </main>
-    </div>
+    </AppLayout>
   );
 };

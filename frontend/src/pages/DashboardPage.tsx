@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../components/auth/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { AppLayout } from '../components/layout/AppLayout';
 
 export const DashboardPage: React.FC = () => {
   const { profile, signOut } = useAuth();
@@ -29,35 +30,8 @@ export const DashboardPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navigation Header */}
-      <nav className="bg-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold">Steel Construction MVP</h1>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-gray-700">{profile?.full_name}</span>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleBadgeColor(profile?.role)}`}>
-                  {profile?.role?.replace('_', ' ').toUpperCase()}
-                </span>
-              </div>
-              <button
-                onClick={handleSignOut}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium"
-              >
-                Sign Out
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <AppLayout title="Dashboard">
+      <main className="py-6">
         {/* Welcome Section */}
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -162,6 +136,6 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
       </main>
-    </div>
+    </AppLayout>
   );
 };

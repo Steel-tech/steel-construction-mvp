@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/useAuth';
 import { supabase } from '../lib/supabase';
 import type { WorkOrder } from '../types/database.types';
+import { AppLayout } from '../components/layout/AppLayout';
 
 export const WorkOrdersPage: React.FC = () => {
   const navigate = useNavigate();
@@ -70,34 +71,9 @@ export const WorkOrdersPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navigation Header */}
-      <nav className="bg-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/')}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                ← Back to Dashboard
-              </button>
-              <h1 className="text-xl font-semibold">Work Orders</h1>
-            </div>
-            
-            {['admin', 'project_manager'].includes(profile?.role || '') && (
-              <div className="flex items-center">
-                <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium">
-                  New Work Order
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
-
+    <AppLayout title="Work Orders">
       {/* Filter Tabs */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+      <div className="px-4 sm:px-6 lg:px-8 mt-6">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8">
             <button
@@ -125,7 +101,7 @@ export const WorkOrdersPage: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="py-6">
         <div className="px-4 py-6 sm:px-0">
           {loading ? (
             <div className="flex justify-center items-center h-64">
@@ -208,6 +184,6 @@ export const WorkOrdersPage: React.FC = () => {
           )}
         </div>
       </main>
-    </div>
+    </AppLayout>
   );
 };

@@ -3,6 +3,8 @@ import type { User } from '../../services/api.service';
 
 export interface AuthContextType {
   user: User | null;
+  // Back-compat alias used across pages; mirrors `user`
+  profile?: User | null;
   loading: boolean;
   signUp: (email: string, password: string, fullName: string, role?: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;

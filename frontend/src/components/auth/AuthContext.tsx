@@ -100,6 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value = {
     user,
+    profile: user, // alias for existing pages
     loading,
     signUp,
     signIn,

@@ -6,6 +6,7 @@ import { PieceLocationTracker } from '../components/field/PieceLocationTracker';
 import { CrewAssignmentComponent } from '../components/field/CrewAssignment';
 import { supabase } from '../lib/supabase';
 import type { Project } from '../types/database.types';
+import { AppLayout } from '../components/layout/AppLayout';
 
 type TabType = 'overview' | 'deliveries' | 'locations' | 'crews';
 
@@ -122,29 +123,10 @@ export const FieldDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Mobile-Optimized Header */}
-      <nav className="bg-white shadow-lg sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center space-x-2 sm:space-x-4 overflow-x-auto">
-              <button
-                onClick={() => navigate('/projects')}
-                className="text-gray-600 hover:text-gray-900 whitespace-nowrap"
-              >
-                ← Back
-              </button>
-              <h1 className="text-lg sm:text-xl font-semibold truncate">
-                Field Ops - {project?.name || 'Loading...'}
-              </h1>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* Mobile-Optimized Tab Navigation */}
-      <div className="bg-white border-b sticky top-16 z-30">
-        <div className="max-w-7xl mx-auto px-4">
+    <AppLayout title={`Field Ops${project?.name ? ' · ' + project.name : ''}`}>
+      {/* Page Tabs */}
+      <div className="bg-white border-b">
+        <div className="px-4">
           <div className="flex space-x-1 overflow-x-auto py-2">
             {tabs.map(tab => (
               <button
@@ -165,7 +147,7 @@ export const FieldDashboard: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+      <main className="py-4 sm:py-6 px-4">
         {activeTab === 'overview' && (
           <div className="space-y-4">
             {/* Quick Stats Grid - Mobile Optimized */}
@@ -312,6 +294,6 @@ export const FieldDashboard: React.FC = () => {
           <CrewAssignmentComponent projectId={projectId} />
         )}
       </main>
-    </div>
+    </AppLayout>
   );
 };

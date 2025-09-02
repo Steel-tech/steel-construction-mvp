@@ -6,6 +6,7 @@ import { PieceMarkForm } from '../components/piecemarks/PieceMarkForm';
 import { pieceMarkService } from '../services/pieceMarkService';
 import type { PieceMark, PieceMarkStatus, Project } from '../types/database.types';
 import { supabase } from '../lib/supabase';
+import { AppLayout } from '../components/layout/AppLayout';
 
 export const PieceMarksPage: React.FC = () => {
   const navigate = useNavigate();
@@ -157,42 +158,8 @@ export const PieceMarksPage: React.FC = () => {
   const stats = getStats();
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navigation Header */}
-      <nav className="bg-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/projects')}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                ← Back to Projects
-              </button>
-              <h1 className="text-xl font-semibold">
-                Piece Marks - {project?.name || 'Loading...'}
-              </h1>
-            </div>
-            
-            {canEdit && (
-              <div className="flex items-center">
-                <button
-                  onClick={() => {
-                    setEditingMark(null);
-                    setShowForm(true);
-                  }}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium"
-                >
-                  New Piece Mark
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <AppLayout title={`Piece Marks${project?.name ? ' · ' + project.name : ''}`}>
+      <main className="py-6">
         <div className="px-4 py-6 sm:px-0">
           {/* Dashboard Stats */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
@@ -298,6 +265,6 @@ export const PieceMarksPage: React.FC = () => {
           )}
         </div>
       </main>
-    </div>
+    </AppLayout>
   );
 };
