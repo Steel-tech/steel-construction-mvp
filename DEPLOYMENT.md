@@ -1,5 +1,9 @@
 # Steel Construction MVP - Deployment Guide
 
+## ✅ DEPLOYMENT COMPLETE!
+
+**Frontend is LIVE**: https://steel-construction-asp2kfg18-fsw-iron-task.vercel.app
+
 ## Prerequisites
 
 1. **Supabase Account**: Create a Supabase project at [supabase.com](https://supabase.com)

@@ -5,23 +5,10 @@
   "installCommand": "cd frontend && npm install",
   "devCommand": "cd frontend && npm run dev",
   "env": {
-    "VITE_API_URL": "/api/v1",
+    "VITE_API_URL": "https://steel-construction-mvp-production.up.railway.app/api/v1",
     "VITE_AUTH_TOKEN_KEY": "steel_auth_token"
   },
-  "functions": {
-    "backend/server.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/backend/server.js"
-    },
-    {
-      "source": "/health(.*)",
-      "destination": "/backend/server.js"
-    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
