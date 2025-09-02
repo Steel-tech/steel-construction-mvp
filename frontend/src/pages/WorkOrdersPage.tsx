@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../components/auth/useAuth';
 import { supabase } from '../lib/supabase';
 import type { WorkOrder } from '../types/database.types';
 import { AppLayout } from '../components/layout/AppLayout';
 
 export const WorkOrdersPage: React.FC = () => {
-  const navigate = useNavigate();
   const { profile } = useAuth();
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +15,7 @@ export const WorkOrdersPage: React.FC = () => {
     fetchWorkOrders();
   }, [fetchWorkOrders]);
 
-  const fetchWorkOrders = async () => {
+  const fetchWorkOrders = useCallback(async () => {
     try {
       let query = supabase
         .from('work_orders')
@@ -38,7 +36,7 @@ export const WorkOrdersPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, profile]);
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {

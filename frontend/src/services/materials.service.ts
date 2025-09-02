@@ -2,7 +2,7 @@
  * Materials Service - Handles all material-related operations
  */
 
-import { apiService, type Material, type ApiResponse } from './api.service';
+import { apiService, type Material } from './api.service';
 
 export interface CreateMaterialData {
   name: string;

@@ -11,7 +11,7 @@ export interface TestResult {
   test: string;
   success: boolean;
   message: string;
-  data?: any;
+  data?: unknown;
   error?: string;
 }
 

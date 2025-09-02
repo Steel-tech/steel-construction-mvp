@@ -2,7 +2,7 @@
  * Projects Service - Handles all project-related operations
  */
 
-import { apiService, type Project, type ApiResponse } from './api.service';
+import { apiService, type Project } from './api.service';
 
 export interface ProjectProgress {
   project_id: string;

@@ -4,10 +4,15 @@
  */
 
 // Types for API responses
-export interface ApiResponse<T = any> {
+export interface ValidationDetail {
+  field: string;
+  message: string;
+}
+
+export interface ApiResponse<T = unknown> {
   data?: T;
   error?: string;
-  details?: any[];
+  details?: ValidationDetail[];
 }
 
 export interface User {
@@ -32,6 +37,15 @@ export interface Project {
   end_date: string;
   status: string;
   created_at: string;
+  updated_at: string;
+}
+
+export interface ProjectProgress {
+  project_id: string;
+  stage: string;
+  progress_percentage: number;
+  notes?: string;
+  updated_by: string;
   updated_at: string;
 }
 
@@ -167,7 +181,7 @@ class ApiService {
   /**
    * POST request
    */
-  async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
@@ -177,7 +191,7 @@ class ApiService {
   /**
    * PUT request
    */
-  async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async put<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'PUT',
       body: data ? JSON.stringify(data) : undefined,
@@ -254,14 +268,14 @@ class ApiService {
   /**
    * Get project progress
    */
-  async getProjectProgress(projectId: string): Promise<ApiResponse<any>> {
+  async getProjectProgress(projectId: string): Promise<ApiResponse<ProjectProgress[]>> {
     return this.get(`/projects/${projectId}/progress`);
   }
 
   /**
    * Update project progress
    */
-  async updateProjectProgress(projectId: string, progressData: any): Promise<ApiResponse<any>> {
+  async updateProjectProgress(projectId: string, progressData: Omit<ProjectProgress, 'project_id' | 'updated_at'>): Promise<ApiResponse<ProjectProgress>> {
     return this.post(`/projects/${projectId}/progress`, progressData);
   }
 

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import { useAuth } from '../components/auth/useAuth';
 import { PieceMarkList } from '../components/piecemarks/PieceMarkList';
 import { PieceMarkForm } from '../components/piecemarks/PieceMarkForm';
@@ -9,7 +9,6 @@ import { supabase } from '../lib/supabase';
 import { AppLayout } from '../components/layout/AppLayout';
 
 export const PieceMarksPage: React.FC = () => {
-  const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
   const { profile } = useAuth();
   const [pieceMarks, setPieceMarks] = useState<PieceMark[]>([]);
@@ -35,7 +34,7 @@ export const PieceMarksPage: React.FC = () => {
     filterMarks();
   }, [filterMarks]);
 
-  const fetchProject = async () => {
+  const fetchProject = useCallback(async () => {
     if (!projectId) return;
     
     try {
@@ -51,9 +50,9 @@ export const PieceMarksPage: React.FC = () => {
       const errorMessage = err instanceof Error ? err.message : 'Error fetching project';
       console.error('Error fetching project:', errorMessage);
     }
-  };
+  }, [projectId]);
 
-  const fetchPieceMarks = async () => {
+  const fetchPieceMarks = useCallback(async () => {
     if (!projectId) return;
     
     setLoading(true);
@@ -66,9 +65,9 @@ export const PieceMarksPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId]);
 
-  const filterMarks = () => {
+  const filterMarks = useCallback(() => {
     let filtered = [...pieceMarks];
 
     // Filter by search term
@@ -86,7 +85,7 @@ export const PieceMarksPage: React.FC = () => {
     }
 
     setFilteredMarks(filtered);
-  };
+  }, [pieceMarks, searchTerm, statusFilter]);
 
   const handleCreate = async (data: Partial<PieceMark>) => {
     try {

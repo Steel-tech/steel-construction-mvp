@@ -4,23 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
 
 export const DashboardPage: React.FC = () => {
-  const { profile, signOut } = useAuth();
+  const { profile } = useAuth();
   const navigate = useNavigate();
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/login');
-  };
-
-  const getRoleBadgeColor = (role?: string) => {
-    switch (role) {
-      case 'admin': return 'bg-red-100 text-red-800';
-      case 'project_manager': return 'bg-purple-100 text-purple-800';
-      case 'shop': return 'bg-blue-100 text-blue-800';
-      case 'field': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
 
   const dashboardCards = [
     { title: 'Active Projects', count: '0', color: 'bg-blue-500', link: '/projects' },

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import { useAuth } from '../components/auth/useAuth';
 import { DeliveryReceiving } from '../components/field/DeliveryReceiving';
 import { PieceLocationTracker } from '../components/field/PieceLocationTracker';
@@ -11,7 +11,6 @@ import { AppLayout } from '../components/layout/AppLayout';
 type TabType = 'overview' | 'deliveries' | 'locations' | 'crews';
 
 export const FieldDashboard: React.FC = () => {
-  const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
   const { profile } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
@@ -31,7 +30,7 @@ export const FieldDashboard: React.FC = () => {
     }
   }, [projectId, fetchProject, fetchStats]);
 
-  const fetchProject = async () => {
+  const fetchProject = useCallback(async () => {
     if (!projectId) return;
     
     try {
@@ -46,9 +45,9 @@ export const FieldDashboard: React.FC = () => {
     } catch (error) {
       console.error('Error fetching project:', error);
     }
-  };
+  }, [projectId]);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     if (!projectId) return;
 
     try {
@@ -100,7 +99,7 @@ export const FieldDashboard: React.FC = () => {
     } catch (error) {
       console.error('Error fetching stats:', error);
     }
-  };
+  }, [projectId]);
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: '📊' },
