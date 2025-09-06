@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import QRCode from 'qrcode';
 import { useDropzone } from 'react-dropzone';
 import type { PieceMark, PieceMarkStatus } from '../../types/database.types';
@@ -69,7 +69,7 @@ export const PieceMarkCard: React.FC<PieceMarkCardProps> = ({
     fetchPhotos();
   }, [fetchPhotos]);
 
-  const fetchPhotos = async () => {
+  const fetchPhotos = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('progress_photos')
@@ -82,7 +82,7 @@ export const PieceMarkCard: React.FC<PieceMarkCardProps> = ({
     } catch (error) {
       console.error('Error fetching photos:', error);
     }
-  };
+  }, [pieceMark.id]);
 
   // Photo upload with Dropzone
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { ProductionWorkflow, ProductionStage, StageTransition } from '../../types/production.types';
 import { productionService } from '../../services/production.service';
 
@@ -141,7 +141,7 @@ export const ProductionTimeline: React.FC<ProductionTimelineProps> = ({
     fetchTimelineData();
   }, [fetchTimelineData]);
 
-  const fetchTimelineData = async () => {
+  const fetchTimelineData = useCallback(async () => {
     setLoading(true);
     try {
       const [stagesData, transitionsData] = await Promise.all([
@@ -155,7 +155,7 @@ export const ProductionTimeline: React.FC<ProductionTimelineProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [workflow.id]);
 
   const getStageStatus = (stage: ProductionStage): 'completed' | 'current' | 'upcoming' => {
     if (!workflow.current_stage_id) return 'upcoming';

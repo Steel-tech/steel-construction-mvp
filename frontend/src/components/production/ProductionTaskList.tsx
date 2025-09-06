@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { ProductionTask, TaskStatus, ProductionStage, UpdateTaskData } from '../../types/production.types';
 import { productionService } from '../../services/production.service';
 import { useAuth } from '../auth/useAuth';
@@ -223,7 +223,7 @@ export const ProductionTaskList: React.FC<ProductionTaskListProps> = ({
     fetchTasks();
   }, [fetchTasks]);
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     setLoading(true);
     try {
       const [tasksData, stagesData] = await Promise.all([
@@ -237,7 +237,7 @@ export const ProductionTaskList: React.FC<ProductionTaskListProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [workflowId]);
 
   const handleTaskUpdate = async (taskId: string, data: UpdateTaskData) => {
     try {

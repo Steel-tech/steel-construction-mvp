@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { DndContext, type DragEndEvent, type DragStartEvent, useDraggable, useDroppable, DragOverlay } from '@dnd-kit/core';
 import type { ProductionWorkflow, ProductionStage, Priority } from '../../types/production.types';
 import { productionService } from '../../services/production.service';
@@ -177,7 +177,7 @@ export const ProductionKanban: React.FC<ProductionKanbanProps> = ({
     fetchData();
   }, [fetchData]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [stagesData, workflowsData] = await Promise.all([
@@ -191,7 +191,7 @@ export const ProductionKanban: React.FC<ProductionKanbanProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId]);
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id);

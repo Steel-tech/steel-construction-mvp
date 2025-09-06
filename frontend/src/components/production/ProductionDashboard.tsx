@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ProductionKanban } from './ProductionKanban';
 import { ProductionTimeline } from './ProductionTimeline';
 import { ProductionTaskList } from './ProductionTaskList';
@@ -49,7 +49,7 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
     }
   }, [selectedWorkflow, handleTaskUpdate]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [workflowsData, statsData] = await Promise.all([
@@ -72,9 +72,9 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId, pieceMarkId, selectedWorkflow]);
 
-  const handleWorkflowUpdate = (event: WorkflowUpdateEvent) => {
+  const handleWorkflowUpdate = useCallback((event: WorkflowUpdateEvent) => {
     console.log('Workflow update:', event);
     setRealtimeEvents(prev => [event, ...prev].slice(0, 10));
     
@@ -92,9 +92,9 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
     } else if (event.type === 'INSERT') {
       fetchData(); // Refetch to get complete data
     }
-  };
+  }, [selectedWorkflow?.id, fetchData]);
 
-  const handleTaskUpdate = (event: TaskUpdateEvent) => {
+  const handleTaskUpdate = useCallback((event: TaskUpdateEvent) => {
     console.log('Task update:', event);
     setRealtimeEvents(prev => [event, ...prev].slice(0, 10));
     
@@ -102,7 +102,7 @@ export const ProductionDashboard: React.FC<ProductionDashboardProps> = ({
     if (view === 'tasks') {
       // The TaskList component will handle its own updates
     }
-  };
+  }, [view]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

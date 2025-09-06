@@ -23,7 +23,7 @@ export const SimpleApp: React.FC = () => {
           setBackendStatus('⚠️ Backend responded with error');
           setBackendError(`Status: ${response.status}`);
         }
-      } catch (err) {
+      } catch {
         setBackendStatus('🔄 Backend is waking up...');
         setBackendError('Free tier servers sleep after 15 min of inactivity. First request takes 30-60 seconds to wake up. Please wait...');
         

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { PieceMark } from '../../types/database.types';
 import type {
@@ -43,7 +43,7 @@ export const QualityChecklist: React.FC<QualityChecklistProps> = ({
     fetchTemplates();
   }, [fetchTemplates]);
 
-  const fetchTemplates = async () => {
+  const fetchTemplates = useCallback(async () => {
     try {
       const data = await qualityService.getChecklistTemplates(inspectionType);
       setTemplates(data);
@@ -53,7 +53,7 @@ export const QualityChecklist: React.FC<QualityChecklistProps> = ({
     } catch (error) {
       console.error('Error fetching templates:', error);
     }
-  };
+  }, [inspectionType]);
 
   const startInspection = async () => {
     if (!user || !selectedTemplate) return;
